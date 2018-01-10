@@ -2,13 +2,9 @@ package com.rwj.offlineAnalysisPrj.test;
 
 import com.rwj.offlineAnalysisPrj.util.DateUtils;
 import com.rwj.offlineAnalysisPrj.util.StringUtils;
-import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.RowFactory;
-import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
 
@@ -103,14 +99,83 @@ public class MockData {
         df.registerTempTable("user_visit_action");
 
         df.printSchema();
-
-        //df.show(5, true);
-        //df.show(5, false);
-
         System.out.println(df.collectAsList().get(1));
+        df.write().mode(SaveMode.Append).format("json").save("T:\\testdata\\sparkprj\\user_visit_action");
+
+        /**
+         * ==================================================================
+         */
+
+        rows.clear();
+
+        String[] sexes = new String[]{"男", "女"};
+        for(int i = 0; i < 100; i++) {
+            long userId = i;
+            String loginName = "user_" + i;
+            String realnName = "name_" + i;
+            int age = random.nextInt(60);
+            String profession = "profession_" + random.nextInt(100);
+            String city = "city_" + random.nextInt(200);
+            String sex = sexes[random.nextInt(2)];
+
+            Row row = RowFactory.create(userId, loginName, realnName, age, profession, city, sex);
+            rows.add(row);
+        }
+
+        rowsRDD = sc.parallelize(rows);
+
+        StructType schema2 = DataTypes.createStructType(Arrays.asList(
+                DataTypes.createStructField("userId", DataTypes.LongType, true),
+                DataTypes.createStructField("loginName", DataTypes.StringType, true),
+                DataTypes.createStructField("realName", DataTypes.StringType, true),
+                DataTypes.createStructField("age", DataTypes.IntegerType, true),
+                DataTypes.createStructField("profession", DataTypes.StringType, true),
+                DataTypes.createStructField("city", DataTypes.StringType, true),
+                DataTypes.createStructField("sex", DataTypes.StringType, true)
+        ));
+
+        Dataset<Row> df2 = sqlContext.createDataFrame(rowsRDD, schema2);
+
+        df2.registerTempTable("user_info");
+
+        df2.printSchema();
+        System.out.println(df2.collectAsList().get(1));
+        df.write().mode(SaveMode.Append).format("json").save("T:\\testdata\\sparkprj\\user_info");
+
+        /**
+         * ==================================================================
+         */
+
+        rows.clear();
+
+        int[] productStatus = new int[]{0, 1};
+
+        for(int i= 0; i < 100; i++) {
+            long productId = i;
+            String productInfo = "product" + i;
+            String extendInfo = "{\"product_status\": " + productStatus[random.nextInt(2)] + "}";
+
+            Row row = RowFactory.create(productId, productInfo, extendInfo);
+            rows.add(row);
+        }
+
+        rowsRDD = sc.parallelize(rows);
+
+        StructType schema3 = DataTypes.createStructType(Arrays.asList(
+            DataTypes.createStructField("product_id", DataTypes.LongType,true),
+            DataTypes.createStructField("product_name", DataTypes.StringType,true),
+            DataTypes.createStructField("extend_info", DataTypes.StringType,true)
+        ));
+
+        Dataset df3 = sqlContext.createDataFrame(rowsRDD, schema3);
+        df3.printSchema();
+
+        df3.registerTempTable("product_info");
+        System.out.println(df3.collectAsList().get(1));
+        df.write().mode(SaveMode.Append).format("json").save("T:\\testdata\\sparkprj\\product_info");
     }
 
-    public static void main(String[] args){
+ /*   public static void main(String[] args){
 
         SparkConf conf = new SparkConf()
                 .setMaster("local[*]")
@@ -120,5 +185,5 @@ public class MockData {
 
 
         mock(sc, sqlContext);
-    }
+    }*/
 }

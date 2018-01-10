@@ -5,5 +5,7 @@
     2. 在spark2.0后，DataFrame的API和DataSet的API合并统一了，现在只需要处理DataSet相关API即可。Reference：
         https://www.iteblog.com/archives/1566.html#DataFrame
 
+        http://spark.apache.org/docs/latest/api/java/org/apache/spark/sql/Dataset.html
+
     3.关于遍历DataSet那块儿，找半天资料找不到。最后在DataSet官方API文档中找到适合的方法。
         ——可能引发的一个学习方法：去官方APi文档中了解一下大概的方法有哪些。
