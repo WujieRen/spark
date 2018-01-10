@@ -43,7 +43,7 @@ public class StringUtils {
      * @param str
      * @return
      */
-    public static String fulfuill(String str) {
+    public static String fulfill(String str) {
         if(str.length() == 2){
             return str;
         } else {
