@@ -9,3 +9,9 @@
 
     3.关于遍历DataSet那块儿，找半天资料找不到。最后在DataSet官方API文档中找到适合的方法。
         ——可能引发的一个学习方法：去官方APi文档中了解一下大概的方法有哪些。
+
+    4.Dataset保存到本地。
+        http://spark.apachecn.org/docs/cn/2.2.0/sql-programming-guide.html#manually-specifying-options-手动指定选项
+
+
+

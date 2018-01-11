@@ -1,4 +1,4 @@
-package com.rwj.offlineAnalysisPrj.test;
+package com.rwj.offlineAnalysisPrj.mockdata;
 
 import com.rwj.offlineAnalysisPrj.util.DateUtils;
 import com.rwj.offlineAnalysisPrj.util.StringUtils;
