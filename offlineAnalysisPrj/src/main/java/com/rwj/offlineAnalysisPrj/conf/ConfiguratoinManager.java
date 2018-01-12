@@ -34,10 +34,10 @@ public class ConfiguratoinManager {
      * @param key
      * @return
      */
-    public static Integer getInteger(String key) {
+    public static Integer getIntValue(String key) {
         String value = getProperty(key);
         try {
-            Integer.valueOf(value);
+            return Integer.valueOf(value);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
@@ -50,7 +50,7 @@ public class ConfiguratoinManager {
      * @param key
      * @return
      */
-    public static Boolean getBoolean(String key) {
+    public static Boolean getBooleanValue(String key) {
         String value = getProperty(key);
         try {
             Boolean.valueOf(key);
@@ -66,7 +66,7 @@ public class ConfiguratoinManager {
      * @param key
      * @return
      */
-    public static Long getLong(String key) {
+    public static Long getLongValue(String key) {
         String value = getProperty(key);
         try {
             Long.valueOf(value);

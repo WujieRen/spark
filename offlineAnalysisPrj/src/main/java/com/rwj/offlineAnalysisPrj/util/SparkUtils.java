@@ -33,7 +33,7 @@ public class SparkUtils {
      * @param sqlContext
      */
     public static void mockData(JavaSparkContext sc, SQLContext sqlContext) {
-        boolean local = ConfiguratoinManager.getBoolean(Constants.SPARK_LOCAL);
+        boolean local = ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL);
         if(local){
             //MockData.mock(sc, sqlContext);
         }

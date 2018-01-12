@@ -43,7 +43,7 @@ public class JdbcHelper {
 
     //private Constructor && 将创建的 Connectin 放在唯一的数据库连接池中
     private JdbcHelper() {
-        int dataSourceSize = ConfiguratoinManager.getInteger(Constants.JDBC_DATASOURCE_SIZE);
+        int dataSourceSize = ConfiguratoinManager.getIntValue(Constants.JDBC_DATASOURCE_SIZE);
 
         for (int i = 0; i < dataSourceSize; i++) {
             String url = ConfiguratoinManager.getProperty(Constants.JDBC_URL);
@@ -124,6 +124,8 @@ public class JdbcHelper {
             callback.process(rs);
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (conn != null) {
                 dataSource.push(conn);
@@ -170,7 +172,7 @@ public class JdbcHelper {
     //TODO:这块儿没太明白，看下原理
     public static interface QueryCallback {
         //处理查询结果
-        void process(ResultSet rs);
+        void process(ResultSet rs) throws Exception;
     }
 
 }
