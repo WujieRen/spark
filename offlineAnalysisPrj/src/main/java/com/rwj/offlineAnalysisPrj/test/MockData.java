@@ -30,7 +30,7 @@ public class MockData {
         Random random = new Random();
 
         for(int i = 0; i < 100; i++) {
-            int userId = random.nextInt(50);
+            long userId = random.nextInt(50);
 
             for(int j = 0; j < 10; j++) {
                 String sessionId = UUID.randomUUID().toString().replace("-", "");
@@ -80,7 +80,7 @@ public class MockData {
 
         StructType schema = DataTypes.createStructType(Arrays.asList(
                 DataTypes.createStructField("date", DataTypes.StringType, true),
-                DataTypes.createStructField("user_id", DataTypes.IntegerType, true),
+                DataTypes.createStructField("user_id", DataTypes.LongType, true),
                 DataTypes.createStructField("session_id", DataTypes.StringType, true),
                 DataTypes.createStructField("page_id", DataTypes.LongType, true),
                 DataTypes.createStructField("action_time", DataTypes.StringType, true),

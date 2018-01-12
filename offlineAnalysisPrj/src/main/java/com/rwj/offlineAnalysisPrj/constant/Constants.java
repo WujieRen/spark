@@ -18,4 +18,21 @@ public interface Constants {
     //Spark入口更新为SparkSession后不再需要
     //String SPARK_LOCAL = "spark.local";
 
+    /**
+     * 任务相关的常量
+     */
+    String PARAM_START_DATE = "startDate";
+    String PARAM_END_DATE = "endDate";
+
+    /**
+     *Spark作业常量
+     */
+    String FIELD_SESSION_ID = "sessionid";
+    String FIELD_SEARCH_KEYWORDS = "searchKeywords";
+    String FIELD_CLICK_CATEGORY_IDS = "clickCategoryIds";
+    String FIELD_AGE = "age";
+    String FIELD_PROFESSIONAL = "professional";
+    String FIELD_CITY = "city";
+    String FIELD_SEX = "sex";
+
 }

@@ -30,19 +30,19 @@ public class MockData {
         Random random = new Random();
 
         for(int i = 0; i < 100; i++) {
-            int userId = random.nextInt(50);
+            long userId = random.nextInt(50);
 
             for(int j = 0; j < 10; j++) {
                 String sessionId = UUID.randomUUID().toString().replace("-", "");
                 String baseActionTime = date + " " + random.nextInt(23);
 
-                Long clickCategoryId = null;
+                Long clickCategoryId = -1L;
 
                 for(int k = 0; k < random.nextInt(100); k++) {
                     long pageId = random.nextInt(10);
                     String actionTime = baseActionTime + ":" + StringUtils.fulfill(String.valueOf(random.nextInt(59))) + ":" + StringUtils.fulfill(String.valueOf(random.nextInt(59)));
                     String searchKeyword = null;
-                    Long clickProductId = null;
+                    Long clickProductId = -1L;
                     String orderCategoryIds = null;
                     String orderProductIds = null;
                     String payCategoryIds = null;
@@ -80,7 +80,7 @@ public class MockData {
 
         StructType schema = DataTypes.createStructType(Arrays.asList(
                 DataTypes.createStructField("date", DataTypes.StringType, true),
-                DataTypes.createStructField("user_id", DataTypes.IntegerType, true),
+                DataTypes.createStructField("user_id", DataTypes.LongType, true),
                 DataTypes.createStructField("session_id", DataTypes.StringType, true),
                 DataTypes.createStructField("page_id", DataTypes.LongType, true),
                 DataTypes.createStructField("action_time", DataTypes.StringType, true),

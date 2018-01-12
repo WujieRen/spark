@@ -1,7 +1,5 @@
 package com.rwj.offlineAnalysisPrj.util;
 
-import com.rwj.offlineAnalysisPrj.conf.ConfiguratoinManager;
-import com.rwj.offlineAnalysisPrj.constant.Constants;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SQLContext;
 
@@ -33,10 +31,7 @@ public class SparkUtils {
      * @param sqlContext
      */
     public static void mockData(JavaSparkContext sc, SQLContext sqlContext) {
-        boolean local = ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL);
-        if(local){
             //MockData.mock(sc, sqlContext);
-        }
     }
 
 
