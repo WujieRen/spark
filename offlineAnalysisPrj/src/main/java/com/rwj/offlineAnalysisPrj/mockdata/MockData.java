@@ -30,7 +30,7 @@ public class MockData {
         Random random = new Random();
 
         for(int i = 0; i < 100; i++) {
-            long userId = random.nextInt(50);
+            int userId = random.nextInt(50);
 
             for(int j = 0; j < 10; j++) {
                 String sessionId = UUID.randomUUID().toString().replace("-", "");
