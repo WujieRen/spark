@@ -15,6 +15,7 @@ public interface Constants {
     String JDBC_USER = "jdbc.user";
     String JDBC_PASSWORD = "jdbc.password";
     String JDBC_DATASOURCE_SIZE = "jdbc.datasource.size";
-    String SPARK_LOCAL = "spark.local";
+    //Spark入口更新为SparkSession后不再需要
+    //String SPARK_LOCAL = "spark.local";
 
 }

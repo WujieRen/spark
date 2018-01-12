@@ -1,4 +1,4 @@
-package com.rwj.offlineAnalysisPrj.mockdata;
+package com.rwj.offlineAnalysisPrj.test;
 
 import com.rwj.offlineAnalysisPrj.util.DateUtils;
 import com.rwj.offlineAnalysisPrj.util.StringUtils;
@@ -162,9 +162,9 @@ public class MockData {
         rowsRDD = sc.parallelize(rows);
 
         StructType schema3 = DataTypes.createStructType(Arrays.asList(
-                DataTypes.createStructField("product_id", DataTypes.LongType,true),
-                DataTypes.createStructField("product_name", DataTypes.StringType,true),
-                DataTypes.createStructField("extend_info", DataTypes.StringType,true)
+            DataTypes.createStructField("product_id", DataTypes.LongType,true),
+            DataTypes.createStructField("product_name", DataTypes.StringType,true),
+            DataTypes.createStructField("extend_info", DataTypes.StringType,true)
         ));
 
         Dataset df3 = ss.createDataFrame(rowsRDD, schema3);
@@ -173,5 +173,24 @@ public class MockData {
         df3.registerTempTable("product_info");
         System.out.println(df3.collectAsList().get(1));
         df.write().mode(SaveMode.Append).format("json").save("T:\\testdata\\sparkprj\\product_info");
+    }
+
+    public static void main(String[] args){
+
+       /* SparkConf conf = new SparkConf()
+                .setMaster("local[*]")
+                .setAppName("Mock");
+        JavaSparkContext sc = new JavaSparkContext(conf);
+        SQLContext sqlContext = new SQLContext(sc);*/
+
+        /*SparkSession ss = SparkSession.builder()
+                .master("local[*]")
+                .appName("UserVisitSessionAnalyzeSpark")
+                .enableHiveSupport()
+                .getOrCreate();
+        SparkContext sc = ss.sparkContext();
+        JavaSparkContext jsc = JavaSparkContext.fromSparkContext(sc);
+
+        mock(jsc, ss);*/
     }
 }

@@ -59,7 +59,7 @@
 2018/1/12
     1.
         JdbcHelperTest
-            ①熟悉了打断点Debug，并成功修复问题
+            ① 熟悉了打断点Debug，并成功修复问题
             ②
               /**
                * 设计内部接口QueryCallback的用意：
@@ -69,3 +69,15 @@
                */
 
     2.
+        Dao
+            ① 实体类用基本类型好还是包装类型好？
+            	https://www.cnblogs.com/rocky-AGE-24/p/5944278.html
+
+            ② 深入理解 final 关键字：
+            	https://www.cnblogs.com/dolphin0520/p/3736238.html
+
+    3. Spark2.0后SparkSession入口取代了原本的SQLContext与HiveContext。所以重构了一下Session分析的入口 && 模拟数据的Spark入口。
+        -》中间遇到一个错误：Invalid Integer ...
+        -》最终原因是：userId 定义时定义的int，而在Schema中定义成了LongType，导致数据类型不匹配。(找了三个小时多...最终找罗晶解决的。他的解决方法：他在那个 DataSet形成的地方打了各断点，一个一个数据类型对照，最终解决。)
+
+
