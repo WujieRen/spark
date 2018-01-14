@@ -8,7 +8,7 @@ package com.rwj.offlineAnalysisPrj.util;
 public class ValidUtils {
 
     /**
-     * 校验数据中的指定字段，是否在指定范围内(值不只一个)
+     * 校验数据中的指定字段，是否在指定范围内（数值型）
      *
      * @param data            数据
      * @param dataField       数据字段
@@ -20,8 +20,8 @@ public class ValidUtils {
     public static boolean between(String data, String dataField,
                                   String parameter, String startParamField,
                                   String endParamField) {
-        String startParamFieldStr = StringUtils.getFieldFromConcatString(data, "\\|", startParamField);
-        String endParamFieldStr = StringUtils.getFieldFromConcatString(data, "\\|", endParamField);
+        String startParamFieldStr = StringUtils.getFieldFromConcatString(parameter, "\\|", startParamField);
+        String endParamFieldStr = StringUtils.getFieldFromConcatString(parameter, "\\|", endParamField);
         if (startParamFieldStr == null || endParamFieldStr == null) {
             return true;
         }
@@ -32,7 +32,7 @@ public class ValidUtils {
             int endSet = Integer.valueOf(endParamFieldStr);
             int dataSet = Integer.valueOf(dataFieldStr);
 
-            if (endSet >= startSet && dataSet <= endSet) {
+            if (dataSet >= startSet && dataSet <= endSet) {
                 return true;
             } else {
                 return false;
@@ -43,7 +43,8 @@ public class ValidUtils {
     }
 
     /**
-     * 校验数据中的指定字段，是否有值与参数字段的值相同
+     * 校验数据中的指定字段，是否有值与参数字段的值相同。
+     * 只有有任何一个值相同就会返回true，都不相同才返回false。
      *
      * @param data       数据
      * @param dataField  数据字段
@@ -76,7 +77,7 @@ public class ValidUtils {
     }
 
     /**
-     * 校验数据中的指定字段，是否在指定范围内(值为单个)
+     * 校验数据中的指定字段，是否在指定范围内(字符型)
      *
      * @param data       数据
      * @param dataField  数据字段

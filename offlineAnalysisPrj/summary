@@ -83,8 +83,20 @@
     4.编码过程中要清楚地知道每一步数据处理操作的来源和结果数据长什么样子，每个元素是什么类型。这个很重要。
 
     5.按session粒度聚合数据完成。
+        数据结构：Tuple2<String, String>(sessionId, fullAggrInfo)
+
         ① row.getLong()、row.geFloat()等方法当遇到控制时会报错。我用-1处理了。
         ② Debug小经验：Debug时可以再数据处理形成新的数据的地方打断点，看哪里出问题了。
 
 
-
+2018/1/14
+    1.按筛选参数过滤聚合session数据 && 测试通过
+        结果：
+            989 ----------------------------(7fbee8e9cbb84a1587882cf6e979e11e,sessionid=7fbee8e9cbb84a1587882cf6e979e11e|searchKeywords=|clickCategoryIds=|age=5|professional=profession_49|city=city_185|sex=男)
+            108 ----------------------------(7644fd6e87f9405fbe0a1b1972d7f4be,sessionid=7644fd6e87f9405fbe0a1b1972d7f4be|searchKeywords=串串|clickCategoryIds=|age=42|professional=profession_58|city=city_110|sex=女)
+        问题：
+            1、//TODO:final 过滤时没有用final修饰parameter也不影响，为什么还要定义成final?
+            2、过滤数目不对，查找原因为ValidUtils的between方法定义有问题：
+                ①在paramter中查找的参数去data中查找了。
+                ②比较大小时定义成了只要小于endAge的就可以通过。
+                这两个属于不细心 —— 或者说脑子思路不够清晰

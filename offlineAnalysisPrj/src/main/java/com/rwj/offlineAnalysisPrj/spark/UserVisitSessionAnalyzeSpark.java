@@ -8,10 +8,12 @@ import com.rwj.offlineAnalysisPrj.domain.Task;
 import com.rwj.offlineAnalysisPrj.mockdata.MockData;
 import com.rwj.offlineAnalysisPrj.util.ParamUtils;
 import com.rwj.offlineAnalysisPrj.util.StringUtils;
+import com.rwj.offlineAnalysisPrj.util.ValidUtils;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -28,7 +30,7 @@ import java.util.Iterator;
  * -》 生成模拟数据
  * -》 获取响应task参数并从表中取得参数范围内数据
  * -》 对行为数据按session粒度进行聚合
- * -》 首先可将行为数据按session_id进行grouoby，此时得到的数据粒度就是isession粒度了。
+ * -》 首先可将行为数据按session_id进行grouoby，此时得到的数据粒度就是session粒度了。
  * -》 将session粒度的数据和用户信息进行join，就可以获得包含用户信息的session粒度的数据了。
  * 2. 按筛选参数对session粒度聚合数据进行过滤
  * 3. session聚合统计
@@ -82,10 +84,92 @@ public class UserVisitSessionAnalyzeSpark {
 
         //对数据按照sessionId进行groupBy(聚合)，然后与用户信息进行join就是session粒度的包含session和用户信息的数据了。
         JavaPairRDD<String, String> sessionid2AggrInfoRDD = aggregateBySession(ss, actionRDD);
-        System.out.println(sessionid2AggrInfoRDD.first().toString() + "----------------------------");
+        System.out.println(sessionid2AggrInfoRDD.count() + "----------------------------" + sessionid2AggrInfoRDD.first().toString());
 
+        //对聚合好的session粒度的数据，按给定参数进行过滤。
+        //相当于自己编写的算子，是要访问外部任务参数对象的。
+        //匿名内部类(算子函数)，访问外部对象，要将外部对象用final修饰
+        JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD = filterSession(sessionid2AggrInfoRDD, taskParam);
+        System.out.println(filteredSessionid2AggrInfoRDD.count() + "----------------------------" + filteredSessionid2AggrInfoRDD.first().toString());
+
+
+        ss.close();
     }
 
+    /**
+     * 按给定参数过滤session数据
+     * @param sessionid2AggrInfoRDD
+     * @param taskParam
+     * @return
+     */
+    private static JavaPairRDD<String,String> filterSession(JavaPairRDD<String, String> sessionid2AggrInfoRDD, final JSONObject taskParam) {
+        String startAge = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_START_AGE);
+        String endAge = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_END_AGE);
+        String professionals = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_PROFESSIONALS);
+        String cities = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_CITIES);
+        String sex = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_SEX);
+        String keywords = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_KEYWORDS);
+        String categoryIds = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_CATEGORY_IDS);
+
+        String _parameter = (startAge != null ? Constants.PARAM_START_AGE + "=" + startAge + "|" : "")
+                + (endAge != null ? Constants.PARAM_END_AGE + "=" + endAge + "|" : "")
+                + (professionals != null ? Constants.PARAM_PROFESSIONALS + "=" + professionals + "|" : "")
+                + (cities != null ? Constants.PARAM_CITIES + "=" + cities + "|" : "")
+                + (sex != null ? Constants.PARAM_SEX + "=" + sex + "|" : "")
+                + (keywords != null ? Constants.PARAM_KEYWORDS + "=" + keywords + "|" : "")
+                + (categoryIds != null ? Constants.PARAM_CATEGORY_IDS + "=" + categoryIds: "");
+        if(_parameter.endsWith("\\|")) {
+            _parameter = _parameter.substring(0, _parameter.length() - 1);
+        }
+        final String parameter = _parameter;
+
+        // 根据筛选参数进行过滤
+        JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD = sessionid2AggrInfoRDD.filter(
+                new Function<Tuple2<String, String>, Boolean>() {
+                    @Override
+                    public Boolean call(Tuple2<String, String> tuple) throws Exception {
+                        //获取聚合数据
+                        String aggrInfo = tuple._2;
+
+                        //依次按照筛选参数过滤
+                        //年龄
+                        if(!ValidUtils.between(aggrInfo, Constants.FIELD_AGE, parameter, Constants.PARAM_START_AGE, Constants.PARAM_END_AGE)) {
+                            return false;
+                        }
+                        //职业
+                        if(!ValidUtils.in(aggrInfo, Constants.FIELD_PROFESSIONAL, parameter, Constants.PARAM_PROFESSIONALS)) {
+                            return false;
+                        }
+                        //城市
+                        if(!ValidUtils.in(aggrInfo, Constants.FIELD_CITY, parameter, Constants.PARAM_CITIES)) {
+                            return false;
+                        }
+                        //性别
+                        if(!ValidUtils.equal(aggrInfo, Constants.FIELD_SEX, parameter, Constants.PARAM_SEX)) {
+                            return false;
+                        }
+                        //搜索词
+                        if(!ValidUtils.equal(aggrInfo, Constants.FIELD_SEARCH_KEYWORDS, parameter, Constants.PARAM_KEYWORDS)) {
+                            return false;
+                        }
+                        //点击品类id
+                        if(!ValidUtils.in(aggrInfo, Constants.FIELD_CLICK_CATEGORY_IDS, parameter, Constants.PARAM_CATEGORY_IDS)) {
+                            return false;
+                        }
+
+                        return true;
+                    }
+                }
+        );
+        return filteredSessionid2AggrInfoRDD;
+    }
+
+    /**
+     * 按session粒度聚合数据
+     * @param ss
+     * @param actionRDD
+     * @return
+     */
     private static JavaPairRDD<String, String> aggregateBySession(SparkSession ss, JavaRDD<Row> actionRDD) {
         JavaPairRDD<String, Row> sessionId2ActionRDD = actionRDD.mapToPair(
                 new PairFunction<Row, String, Row>() {
