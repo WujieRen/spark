@@ -6,6 +6,7 @@ import com.rwj.offlineAnalysisPrj.dao.ITaskDAO;
 import com.rwj.offlineAnalysisPrj.dao.factory.DAOFactory;
 import com.rwj.offlineAnalysisPrj.domain.Task;
 import com.rwj.offlineAnalysisPrj.mockdata.MockData;
+import com.rwj.offlineAnalysisPrj.util.DateUtils;
 import com.rwj.offlineAnalysisPrj.util.ParamUtils;
 import com.rwj.offlineAnalysisPrj.util.StringUtils;
 import com.rwj.offlineAnalysisPrj.util.ValidUtils;
@@ -20,6 +21,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import scala.Tuple2;
 
+import java.util.Date;
 import java.util.Iterator;
 
 /**
@@ -198,6 +200,12 @@ public class UserVisitSessionAnalyzeSpark {
 
                         Long userId = null;
 
+                        // session的起始和结束时间
+                        Date startTime = null;
+                        Date endTime = null;
+                        // session的访问步长，现在的数据格式<sessionId, <info1,info2...>>，每个sessionId后面有几个info，步长就是几
+                        int stepLength = 0;
+
                         while (iterator.hasNext()) {
                             Row row = iterator.next();
                             if (userId == null) {
@@ -218,15 +226,41 @@ public class UserVisitSessionAnalyzeSpark {
                                     clickCategoryIdsBuffer.append(clickCategoryId + ",");
                                 }
                             }
+
+                            /**
+                             * 重构之访问时长和步长统计
+                             */
+                            Date actionTime = DateUtils.parseTime(row.getString(4));
+                            if(startTime == null) {
+                                startTime = actionTime;
+                            }
+                            if(endTime == null) {
+                                endTime = actionTime;
+                            }
+                            if(actionTime.before(startTime)) {
+                                startTime = actionTime;
+                            }
+                            if(actionTime.after(endTime)) {
+                                endTime = actionTime;
+                            }
+                            //步长统计
+                            stepLength++;
                         }
 
+                        //点击关键词和搜索关键词
                         String searchKeywords = StringUtils.trimComma(searchKeywordsBuffer.toString());
                         String clickCategoryIds = StringUtils.trimComma(clickCategoryIdsBuffer.toString());
+
+                        //访问时长
+                        long visitTimeLength =  (startTime.getTime() - endTime.getTime()) / 1000;
 
                         //因为要和用户数据聚合，所以这里返回<userId, info>的形式
                         String partAggrInfo = Constants.FIELD_SESSION_ID + "=" + sessionId + "|"
                                 + Constants.FIELD_SEARCH_KEYWORDS + "=" + searchKeywords + "|"
-                                + Constants.FIELD_CLICK_CATEGORY_IDS + "=" + clickCategoryIds;
+                                + Constants.FIELD_CLICK_CATEGORY_IDS + "=" + clickCategoryIds+ "|"
+                                + Constants.FIELD_VISIT_LENGTH + "=" + visitTimeLength + "|"
+                                + Constants.FIELD_STEP_LENGTH + "=" + stepLength;
+
                         return new Tuple2<Long, String>(userId, partAggrInfo);
                     }
                 });
