@@ -20,12 +20,12 @@ public class SessionAggrStat {
     private double visit_length_10m_30m_ratio;
     private double visit_length_30m_ratio;
 
-    private double step_length_1_3;
-    private double step_length_4_6;
-    private double step_length_7_9;
-    private double step_length_10_30;
-    private double step_length_30_60;
-    private double step_length_60;
+    private double step_length_1_3_ratio;
+    private double step_length_4_6_ratio;
+    private double step_length_7_9_ratio;
+    private double step_length_10_30_ratio;
+    private double step_length_30_60_ratio;
+    private double step_length_60_ratio;
 
     public long getTask_id() {
         return task_id;
@@ -115,51 +115,51 @@ public class SessionAggrStat {
         this.visit_length_30m_ratio = visit_length_30m_ratio;
     }
 
-    public double getStep_length_1_3() {
-        return step_length_1_3;
+    public double getStep_length_1_3_ratio() {
+        return step_length_1_3_ratio;
     }
 
-    public void setStep_length_1_3(double step_length_1_3) {
-        this.step_length_1_3 = step_length_1_3;
+    public void setStep_length_1_3_ratio(double step_length_1_3_ratio) {
+        this.step_length_1_3_ratio = step_length_1_3_ratio;
     }
 
-    public double getStep_length_4_6() {
-        return step_length_4_6;
+    public double getStep_length_4_6_ratio() {
+        return step_length_4_6_ratio;
     }
 
-    public void setStep_length_4_6(double step_length_4_6) {
-        this.step_length_4_6 = step_length_4_6;
+    public void setStep_length_4_6_ratio(double step_length_4_6_ratio) {
+        this.step_length_4_6_ratio = step_length_4_6_ratio;
     }
 
-    public double getStep_length_7_9() {
-        return step_length_7_9;
+    public double getStep_length_7_9_ratio() {
+        return step_length_7_9_ratio;
     }
 
-    public void setStep_length_7_9(double step_length_7_9) {
-        this.step_length_7_9 = step_length_7_9;
+    public void setStep_length_7_9_ratio(double step_length_7_9_ratio) {
+        this.step_length_7_9_ratio = step_length_7_9_ratio;
     }
 
-    public double getStep_length_10_30() {
-        return step_length_10_30;
+    public double getStep_length_10_30_ratio() {
+        return step_length_10_30_ratio;
     }
 
-    public void setStep_length_10_30(double step_length_10_30) {
-        this.step_length_10_30 = step_length_10_30;
+    public void setStep_length_10_30_ratio(double step_length_10_30_ratio) {
+        this.step_length_10_30_ratio = step_length_10_30_ratio;
     }
 
-    public double getStep_length_30_60() {
-        return step_length_30_60;
+    public double getStep_length_30_60_ratio() {
+        return step_length_30_60_ratio;
     }
 
-    public void setStep_length_30_60(double step_length_30_60) {
-        this.step_length_30_60 = step_length_30_60;
+    public void setStep_length_30_60_ratio(double step_length_30_60_ratio) {
+        this.step_length_30_60_ratio = step_length_30_60_ratio;
     }
 
-    public double getStep_length_60() {
-        return step_length_60;
+    public double getStep_length_60_ratio() {
+        return step_length_60_ratio;
     }
 
-    public void setStep_length_60(double step_length_60) {
-        this.step_length_60 = step_length_60;
+    public void setStep_length_60_ratio(double step_length_60_ratio) {
+        this.step_length_60_ratio = step_length_60_ratio;
     }
 }

@@ -9,10 +9,11 @@ import org.apache.spark.util.AccumulatorV2;
  *
  * reference:
  *  http://www.cnblogs.com/zhangweilun/p/6684776.html
+ *  http://blog.csdn.net/duan_zhihua/article/details/75269994
  */
 public class SessionAggrStatAccumulator extends AccumulatorV2<String, String> {
 
-    private static String result = Constants.SESSION_COUNT + "=0|"
+    private String result = Constants.SESSION_COUNT + "=0|"
             + Constants.TIME_PERIOD_1s_3s + "=0|"
             + Constants.TIME_PERIOD_4s_6s + "=0|"
             + Constants.TIME_PERIOD_7s_9s + "=0|"
@@ -52,19 +53,7 @@ public class SessionAggrStatAccumulator extends AccumulatorV2<String, String> {
                 + Constants.STEP_PERIOD_10_30 + "=0|"
                 + Constants.STEP_PERIOD_30_60 + "=0|"
                 + Constants.STEP_PERIOD_60 + "=0";
-        return this.result == newResult;
-    }
-
-    /**
-     * 拷贝一个新的AccumulatorV2
-     *
-     * @return
-     */
-    @Override
-    public AccumulatorV2 copy() {
-        SessionAggrStatAccumulator myAccumulator = new SessionAggrStatAccumulator();
-        myAccumulator.result = this.result;
-        return myAccumulator;
+        return this.result.equals(newResult);
     }
 
     /**
@@ -90,25 +79,45 @@ public class SessionAggrStatAccumulator extends AccumulatorV2<String, String> {
                 + Constants.STEP_PERIOD_60 + "=0";
     }
 
+    /**
+     * Takes the inputs and accumulates.
+     * @param v
+     */
     @Override
     public void add(String v) {
         String v1 = this.result;
         String v2 = v;
+
         if (StringUtils.isEmpty(v2)) {
             return;
         } else {
             String newResult = "";
             String oldValue = StringUtils.getFieldFromConcatString(v1, "\\|", v2);
-            if (!oldValue.isEmpty()) {
+            if (StringUtils.isNotEmpty(oldValue)) {
                 Integer newValue = Integer.valueOf(oldValue) + 1;
-                newResult = StringUtils.setFieldInConcatString(v1, "\\|", v2, String.valueOf(newValue));
+                newResult = StringUtils.setFieldInConcatString(result, "\\|", v2, String.valueOf(newValue));
             }
             result = newResult;
         }
     }
 
     /**
-     * 合并数据
+     * 拷贝一个新的AccumulatorV2
+     *
+     * @return
+     */
+    @Override
+    public AccumulatorV2 copy() {
+        SessionAggrStatAccumulator myAccumulator = new SessionAggrStatAccumulator();
+        myAccumulator.result = this.result;
+        return myAccumulator;
+    }
+
+    /**
+     * merge方法：把两个累加器的result合并起来,如：
+         override def merge(other:AccumulatorV2[String, ArrayBuffer[String]]): Unit = {
+            result.++=:(other.value)
+         }
      *
      * @param other
      */
@@ -119,7 +128,8 @@ public class SessionAggrStatAccumulator extends AccumulatorV2<String, String> {
         } else {
             if (other instanceof SessionAggrStatAccumulator) {
                 String newResult = "";
-                String[] arrys = new String[]{Constants.SESSION_COUNT,
+                String[] arrys = new String[]{
+                        Constants.SESSION_COUNT,
                         Constants.TIME_PERIOD_1s_3s,
                         Constants.TIME_PERIOD_4s_6s,
                         Constants.TIME_PERIOD_7s_9s,
@@ -134,12 +144,13 @@ public class SessionAggrStatAccumulator extends AccumulatorV2<String, String> {
                         Constants.STEP_PERIOD_7_9,
                         Constants.STEP_PERIOD_10_30,
                         Constants.STEP_PERIOD_30_60,
-                        Constants.STEP_PERIOD_60,
+                        Constants.STEP_PERIOD_60
                 };
                 for (String v : arrys) {
-                    String oldValue = StringUtils.getFieldFromConcatString(((SessionAggrStatAccumulator) other).result, "\\|", v);
-                    if (!oldValue.isEmpty()) {
-                        Integer newValue = Integer.valueOf(oldValue) + 1;
+                    String oldValue = StringUtils.getFieldFromConcatString(this.result, "\\|", v);
+                    if (StringUtils.isNotEmpty(oldValue)) {
+                        Integer newValue = Integer.valueOf(oldValue)
+                                + Integer.valueOf(StringUtils.getFieldFromConcatString(((SessionAggrStatAccumulator) other).result, "\\|", v));
                         if (newResult.isEmpty()) {
                             newResult = StringUtils.setFieldInConcatString(result, "\\|", v, String.valueOf(newValue));
                         }
@@ -159,4 +170,5 @@ public class SessionAggrStatAccumulator extends AccumulatorV2<String, String> {
     public String value() {
         return this.result;
     }
+
 }

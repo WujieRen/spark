@@ -107,4 +107,14 @@
     3.重构思路 && 重构session聚合
 
     4.重构session过滤 && 过滤后对session个数，各访问时长、访问步长范围进行计数
+        Spark2.0后Accumulator也有更新：由原来的AccumulatorParam -> AccumulatorV2
+
+        reference:
+            http://www.cnblogs.com/zhangweilun/p/6684776.html
+            http://blog.csdn.net/duan_zhihua/article/details/75269994
+
+        问题：
+            ①主要是merge()的功能一开始没弄明白。merge()其实是当前result和other.result的一个累加操作，即合并。
+            第一篇reference的merge()逻辑定义有误。
+
 

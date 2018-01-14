@@ -84,6 +84,7 @@ public class JdbcHelper {
 
         try {
             conn = getConnection();
+            conn.setAutoCommit(false);
             pstmt = conn.prepareStatement(sql);
 
             if (params != null && params.length > 0) {
@@ -93,6 +94,8 @@ public class JdbcHelper {
             }
 
             rtn = pstmt.executeUpdate();
+
+            conn.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

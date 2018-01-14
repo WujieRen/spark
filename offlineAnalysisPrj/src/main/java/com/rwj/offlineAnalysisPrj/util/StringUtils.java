@@ -88,9 +88,9 @@ public class StringUtils {
         String[] fields = str.split(delimiter);
 
         for(int i = 0; i < fields.length; i++){
-            String key = fields[i].split("=")[0];
-            if(key.equals(field)){
-                fields[i] = key + newFieldValue;
+            String fieldName = fields[i].split("=")[0];
+            if(fieldName.equals(field)){
+                fields[i] = fieldName + "=" + newFieldValue;
 
                 //替换后就不再进行循环了
                 break;
