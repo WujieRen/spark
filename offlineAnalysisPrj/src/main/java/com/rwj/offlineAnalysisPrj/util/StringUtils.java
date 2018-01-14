@@ -52,7 +52,7 @@ public class StringUtils {
     }
 
     /**
-     * 从拼接的字符串中提取字段
+     * 从拼接的字符串中提取字段值
      * @param str 字符串
      * @param delimiter 分隔符
      * @param field 字段

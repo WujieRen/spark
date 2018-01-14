@@ -44,6 +44,7 @@ public interface Constants {
     String FIELD_VISIT_LENGTH = "visitLength";
     String FIELD_STEP_LENGTH = "stepLength";
 
+
     String SESSION_COUNT = "session_count";
 
     String TIME_PERIOD_1s_3s = "1s_3s";
