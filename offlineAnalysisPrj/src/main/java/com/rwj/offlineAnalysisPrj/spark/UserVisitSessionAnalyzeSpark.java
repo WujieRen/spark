@@ -86,12 +86,13 @@ public class UserVisitSessionAnalyzeSpark {
         JavaPairRDD<String, String> sessionid2AggrInfoRDD = aggregateBySession(ss, actionRDD);
         System.out.println(sessionid2AggrInfoRDD.count() + "----------------------------" + sessionid2AggrInfoRDD.first().toString());
 
-        //对聚合好的session粒度的数据，按给定参数进行过滤。
+        //按筛选参数对session粒度聚合数据进行过滤
         //相当于自己编写的算子，是要访问外部任务参数对象的。
         //匿名内部类(算子函数)，访问外部对象，要将外部对象用final修饰
         JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD = filterSession(sessionid2AggrInfoRDD, taskParam);
         System.out.println(filteredSessionid2AggrInfoRDD.count() + "----------------------------" + filteredSessionid2AggrInfoRDD.first().toString());
 
+        //
 
         ss.close();
     }
