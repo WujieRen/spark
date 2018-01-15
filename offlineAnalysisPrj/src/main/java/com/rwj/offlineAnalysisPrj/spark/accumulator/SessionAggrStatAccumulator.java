@@ -149,8 +149,9 @@ public class SessionAggrStatAccumulator extends AccumulatorV2<String, String> {
                 for (String v : arrys) {
                     String oldValue = StringUtils.getFieldFromConcatString(this.result, "\\|", v);
                     if (StringUtils.isNotEmpty(oldValue)) {
-                        Integer newValue = Integer.valueOf(oldValue)
-                                + Integer.valueOf(StringUtils.getFieldFromConcatString(((SessionAggrStatAccumulator) other).result, "\\|", v));
+                        Integer newValue = Integer.valueOf(oldValue) + Integer.valueOf(StringUtils.getFieldFromConcatString(((SessionAggrStatAccumulator) other).value(), "\\|", v));
+                        //TODO:下边这个也可以，但是在scala中不行。具体原因暂时没弄明白...
+                        //Integer newValue = Integer.valueOf(oldValue) + Integer.valueOf(StringUtils.getFieldFromConcatString(((SessionAggrStatAccumulator) other).result, "\\|", v));
                         if (newResult.isEmpty()) {
                             newResult = StringUtils.setFieldInConcatString(result, "\\|", v, String.valueOf(newValue));
                         }

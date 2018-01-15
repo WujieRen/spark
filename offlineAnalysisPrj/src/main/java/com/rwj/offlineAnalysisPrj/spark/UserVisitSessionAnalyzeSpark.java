@@ -351,7 +351,10 @@ public class UserVisitSessionAnalyzeSpark {
         });
 
         //将 session粒度的聚合数据 与 用户数据 进行聚合
+        //JavaPairRDD<Long, String> userid2PartAggrInfoRDD
+        //JavaPairRDD<Long, Row> userId2InfoRDD
         JavaPairRDD<Long, Tuple2<String, Row>> userId2FullInfoRDD = userid2PartAggrInfoRDD.join(userId2InfoRDD);
+        System.out.println(userId2FullInfoRDD.first().toString());
 
         JavaPairRDD<String, String> sessionId2FullInfoRDD = userId2FullInfoRDD.mapToPair(
                 new PairFunction<Tuple2<Long, Tuple2<String, Row>>, String, String>() {
