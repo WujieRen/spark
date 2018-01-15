@@ -117,4 +117,10 @@
             ①主要是merge()的功能一开始没弄明白。merge()其实是当前result和other.result的一个累加操作，即合并。
             第一篇reference的merge()逻辑定义有误。
 
+        补充：
+            对于Accumulator这种分布式累加计算变量的使用，从Accumulator中获取数据，一定要在某个action操作之后进行。如果没有action操作的话，整个程序根本不会运行。
+
+            另外，必须要把能够触发job执行的操作，放在最终写入MySQL方法之前。
+
+
 
