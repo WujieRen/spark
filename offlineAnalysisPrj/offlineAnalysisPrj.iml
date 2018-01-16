@@ -199,6 +199,5 @@
     <orderEntry type="library" name="Maven: org.json:json:20160810" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.42" level="project" />
     <orderEntry type="library" name="Maven: fastutil:fastutil:5.0.5" level="project" />
-    <orderEntry type="library" name="scala-sdk-2.12.4" level="application" />
   </component>
 </module>
