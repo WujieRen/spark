@@ -3,11 +3,9 @@ package com.rwj.offlineAnalysisPrj.spark;
 import com.alibaba.fastjson.JSONObject;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
 import com.rwj.offlineAnalysisPrj.dao.ISessionAggrStatDAO;
-import com.rwj.offlineAnalysisPrj.dao.ISessionRandomExtractDAO;
 import com.rwj.offlineAnalysisPrj.dao.ITaskDAO;
 import com.rwj.offlineAnalysisPrj.dao.factory.DAOFactory;
 import com.rwj.offlineAnalysisPrj.domain.SessionAggrStat;
-import com.rwj.offlineAnalysisPrj.domain.SessionRandomExtract;
 import com.rwj.offlineAnalysisPrj.domain.Task;
 import com.rwj.offlineAnalysisPrj.mockdata.MockData;
 import com.rwj.offlineAnalysisPrj.spark.accumulator.SessionAggrStatAccumulator;
@@ -17,7 +15,6 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
-import org.apache.spark.api.java.function.PairFlatMapFunction;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -25,7 +22,8 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.util.AccumulatorV2;
 import scala.Tuple2;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Created by renwujie on 2018/01/12 at 13:48
@@ -63,14 +61,14 @@ import java.util.*;
  * ② top10品类被各session点击次数
  * ③ 分组取topN算法获取top10session
  */
-public class UserVisitSessionAnalyzeSpark {
+public class Teswt {
 
     public static void main(String[] args) {
 
         args = new String[]{"1"};
 
         SparkSession ss = SparkSession.builder()
-                .master("local")
+                .master("local[*]")
                 .appName("UserVisitSessionAnalyzeSpark")
                 //.enableHiveSupport()
                 .getOrCreate();
@@ -88,199 +86,41 @@ public class UserVisitSessionAnalyzeSpark {
 
         //从user_visit_action表中查询出指定日期的数据
         JavaRDD<Row> actionRDD = getActionRDDByDateRange(ss, taskParam);
+        System.out.println(actionRDD.first().toString());
 
         //对数据按照sessionId进行groupBy(聚合)，然后与用户信息进行join就是session粒度的包含session和用户信息的数据了。
-        //Tuple2<String, String>(sessionId, fullAggrInfo)
         JavaPairRDD<String, String> sessionid2AggrInfoRDD = aggregateBySession(ss, actionRDD);
         System.out.println(sessionid2AggrInfoRDD.count() + "----------------------------" + sessionid2AggrInfoRDD.first().toString());
 
         //重构，同时进行统计和过滤
         //注册自定义过滤器。reference:http://spark.apache.org/docs/latest/rdd-programming-guide.html#accumulators
         AccumulatorV2<String, String> sessionAggrStatAccumulator = new SessionAggrStatAccumulator();
-        jsc.sc().register(sessionAggrStatAccumulator, "sessionFilterAndCountAccumulator");
+        jsc.sc().register(sessionAggrStatAccumulator);
 
         //按筛选参数对session粒度聚合数据进行过滤
         //相当于自己编写的算子，是要访问外部任务参数对象的。
         //匿名内部类(算子函数)，访问外部对象，要将外部对象用final修饰
-        //Tuple2<String, String>(sessionId, fullAggrInfo)
         JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD = filterSessionAndAggrStat(sessionid2AggrInfoRDD, taskParam, sessionAggrStatAccumulator);
         System.out.println(filteredSessionid2AggrInfoRDD.count() + "----------------------------" + filteredSessionid2AggrInfoRDD.first().toString());
 
         //计算出各个范围的session占比，并写入MySQL
-        calculateAndPersistAggrStat(sessionAggrStatAccumulator.value(), taskId);
-
-        randomExtractSession(task.getTaskid(), filteredSessionid2AggrInfoRDD);
+        calculateAndPersistAggrStat(sessionAggrStatAccumulator.value(), task.getTaskid());
 
         ss.close();
     }
 
     /**
-     * 随机抽取session
-     *
-     * @param taskId
-     * @param sessionid2AggrInfoRDD
-     */
-    private static void randomExtractSession(final long taskId, JavaPairRDD<String, String> sessionid2AggrInfoRDD) {
-        //1.计算出每天每小时session数量，
-        // 先获取JavaPairRDD<yyyy-MM-dd_HH,aggrInfo>格式的RDD
-        //然后countByKey()
-        JavaPairRDD<String, String> time2sessionidRDD = sessionid2AggrInfoRDD.mapToPair(
-                new PairFunction<Tuple2<String, String>, String, String>() {
-                    @Override
-                    public Tuple2<String, String> call(Tuple2<String, String> tuple) throws Exception {
-                        String aggrInfo = tuple._2;
-                        String startTime = StringUtils.getFieldFromConcatString(aggrInfo, "\\|", Constants.FIELD_START_TIME);
-                        String dateHour = DateUtils.getDateHour(startTime);
-                        return new Tuple2<String, String>(dateHour, aggrInfo);
-                    }
-                }
-        );
-
-        //Map<String, Long>(dateHour, count)
-        Map<String, Long> countMap = time2sessionidRDD.countByKey();
-
-        //2.使用按时间比例抽取算法，取出 每天 每小时 抽取session索引
-        //<String, Tuple2<String, List<Integer>(...)>>
-
-        //①将<dateHour, count> -> <date, <hour, count>>
-        Map<String, Map<String, Long>> dateHourCountMap = new HashMap<String, Map<String, Long>>();
-
-        for (Map.Entry<String, Long> entry : countMap.entrySet()) {
-            String[] dateHour = entry.getKey().split("_");
-            String date = dateHour[0];
-            String hour = dateHour[1];
-            long count = Long.valueOf(entry.getValue());
-
-            //这里当get 新date 时，值一定为null，这时要新建一个容器，来存放这个新date的Map。而如果这个 date 是已存在的，就不需要新建，直接添加在旧容器中即可。
-            Map<String, Long> hourCountMap = dateHourCountMap.get(date);
-            if (hourCountMap == null) {
-                hourCountMap = new HashMap<String, Long>();
-                hourCountMap.put(hour, count);
-            } else {
-                hourCountMap.put(hour, count);
-            }
-            dateHourCountMap.put(date, hourCountMap);
-        }
-
-        //②算出每天要抽取的数量，假设总共抽取100个
-        int extractNumberPerDay = 100 / dateHourCountMap.size();
-
-        /**
-         * 按时间随机抽取算法实现
-         */
-        // <date,<hour,(3,5,20,102)>>
-        Map<String, Map<String, List<Integer>>> dateHourExtractMap =
-                new HashMap<String, Map<String, List<Integer>>>();
-        Random random = new Random();
-
-        for (Map.Entry<String, Map<String, Long>> dateHourCountEntry : dateHourCountMap.entrySet()) {
-            String date = dateHourCountEntry.getKey();
-            Map<String, Long> hourCountMap = dateHourCountEntry.getValue();
-
-            //获取 session总数/天
-            long sessionCount = 0L;
-            for (Long tmpCount : hourCountMap.values()) {
-                sessionCount += tmpCount;
-            }
-
-            //
-            Map<String, List<Integer>> hourExtractMap = dateHourExtractMap.get(date);
-            if (hourExtractMap == null) {
-                hourExtractMap = new HashMap<String, List<Integer>>();
-                dateHourExtractMap.put(date, hourExtractMap);
-            }
-
-            //遍历每小时，取 (session/每小时 / sesseion总数/天) * 取session总数 = 每天每小时要取数目
-            for (Map.Entry<String, Long> hourCountEntry : hourCountMap.entrySet()) {
-                String hour = hourCountEntry.getKey();
-                long count = hourCountEntry.getValue();
-
-                //每天每小时要获取多少
-                int hourExtractNumber = (int) (((double) count / (double) sessionCount) * extractNumberPerDay);
-                if (hourExtractNumber > count) {
-                    hourExtractNumber = (int) count;
-                }
-
-                //当get 新hour 时，值一定时null，需要新建容器。
-                List<Integer> extractIndexList = hourExtractMap.get(hour);
-                if (extractIndexList == null) {
-                    extractIndexList = new ArrayList<Integer>();
-                    hourExtractMap.put(hour, extractIndexList);
-                }
-
-                //生成随机索引
-                for (int i = 0; i < hourExtractNumber; i++) {
-                    int extractIndex = random.nextInt((int) count);
-                    while (extractIndexList.contains(extractIndex)) {
-                        extractIndex = random.nextInt((int) count);
-                    }
-                    extractIndexList.add(extractIndex);
-                }
-            }
-        }
-
-        //③遍历每天每小时session，然后根据随机索引进行抽取
-        JavaPairRDD<String, Iterable<String>> time2sessionsRDD = time2sessionidRDD.groupByKey();
-
-        //TODO:Debug时这里总是不执行，因为没有遇到action动作，相当于这里没有触发，所以
-        JavaPairRDD<String, String> extractSessionidsRDD = time2sessionsRDD.flatMapToPair(
-                new PairFlatMapFunction<Tuple2<String, Iterable<String>>, String, String>() {
-                    @Override
-                    public Iterator<Tuple2<String, String>> call(Tuple2<String, Iterable<String>> tuple) throws Exception {
-                        String[] dateHour = tuple._1.split("_");
-                        String date = dateHour[0];
-                        String hour = dateHour[1];
-                        Iterator<String> iterator = tuple._2.iterator();
-                        List<Integer> extractIndexList = dateHourExtractMap.get(date).get(hour);
-
-                        List<Tuple2<String, String>> extractSessionids = new ArrayList<Tuple2<String, String>>();
-
-                        ISessionRandomExtractDAO sessionRandomExtractDAO = DAOFactory.getsessionRandomExtractDAO();
-
-                        int index = 0;
-                        while(iterator.hasNext()) {
-                            if(extractIndexList.contains(index)) {
-                                String sessionAggrInfo = iterator.next();
-                                String sessionId = StringUtils.getFieldFromConcatString(sessionAggrInfo, "\\|", Constants.FIELD_SESSION_ID);
-
-                                SessionRandomExtract sessionRandomExtract = new SessionRandomExtract();
-                                sessionRandomExtract.setTaskId(taskId);
-                                sessionRandomExtract.setSessionId(sessionId);
-
-                                sessionRandomExtract.setStartTime(StringUtils.getFieldFromConcatString(
-                                        sessionAggrInfo, "\\|", Constants.FIELD_START_TIME));
-                                sessionRandomExtract.setSearchKeywords(StringUtils.getFieldFromConcatString(
-                                        sessionAggrInfo, "\\|", Constants.FIELD_SEARCH_KEYWORDS));
-                                sessionRandomExtract.setClickCategoryIds(StringUtils.getFieldFromConcatString(
-                                        sessionAggrInfo, "\\|", Constants.FIELD_CLICK_CATEGORY_IDS));
-
-                                sessionRandomExtractDAO.insert(sessionRandomExtract);
-
-                                extractSessionids.add(new Tuple2<String, String>(sessionId, sessionId));
-                            }
-                            index++;
-                        }
-                        return  extractSessionids.iterator();
-                    }
-                }
-        );
-
-        System.out.println(extractSessionidsRDD.count() + "~~~~~~~~~~~~~~~~~~~~~~");
-    }
-
-    /**
      * 按给定参数过滤session数据
      * 重构：
-     * 过滤的同时对各访问时长和步长进行统计
-     *
+     *  过滤的同时对各访问时长和步长进行统计
      * @param sessionid2AggrInfoRDD
      * @param taskParam
      * @return
      */
-    private static JavaPairRDD<String, String> filterSessionAndAggrStat(
+    private static JavaPairRDD<String,String> filterSessionAndAggrStat(
             JavaPairRDD<String, String> sessionid2AggrInfoRDD,
             final JSONObject taskParam,
-            final AccumulatorV2<String, String> sessionAggrStatAccumulator) {
+            final AccumulatorV2<String, String>  sessionAggrStatAccumulator) {
         String startAge = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_START_AGE);
         String endAge = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_END_AGE);
         String professionals = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_PROFESSIONALS);
@@ -295,8 +135,8 @@ public class UserVisitSessionAnalyzeSpark {
                 + (cities != null ? Constants.PARAM_CITIES + "=" + cities + "|" : "")
                 + (sex != null ? Constants.PARAM_SEX + "=" + sex + "|" : "")
                 + (keywords != null ? Constants.PARAM_KEYWORDS + "=" + keywords + "|" : "")
-                + (categoryIds != null ? Constants.PARAM_CATEGORY_IDS + "=" + categoryIds : "");
-        if (_parameter.endsWith("\\|")) {
+                + (categoryIds != null ? Constants.PARAM_CATEGORY_IDS + "=" + categoryIds: "");
+        if(_parameter.endsWith("\\|")) {
             _parameter = _parameter.substring(0, _parameter.length() - 1);
         }
         final String parameter = _parameter;
@@ -311,27 +151,27 @@ public class UserVisitSessionAnalyzeSpark {
 
                         //依次按照筛选参数过滤
                         //年龄
-                        if (!ValidUtils.between(aggrInfo, Constants.FIELD_AGE, parameter, Constants.PARAM_START_AGE, Constants.PARAM_END_AGE)) {
+                        if(!ValidUtils.between(aggrInfo, Constants.FIELD_AGE, parameter, Constants.PARAM_START_AGE, Constants.PARAM_END_AGE)) {
                             return false;
                         }
                         //职业
-                        if (!ValidUtils.in(aggrInfo, Constants.FIELD_PROFESSIONAL, parameter, Constants.PARAM_PROFESSIONALS)) {
+                        if(!ValidUtils.in(aggrInfo, Constants.FIELD_PROFESSIONAL, parameter, Constants.PARAM_PROFESSIONALS)) {
                             return false;
                         }
                         //城市
-                        if (!ValidUtils.in(aggrInfo, Constants.FIELD_CITY, parameter, Constants.PARAM_CITIES)) {
+                        if(!ValidUtils.in(aggrInfo, Constants.FIELD_CITY, parameter, Constants.PARAM_CITIES)) {
                             return false;
                         }
                         //性别
-                        if (!ValidUtils.equal(aggrInfo, Constants.FIELD_SEX, parameter, Constants.PARAM_SEX)) {
+                        if(!ValidUtils.equal(aggrInfo, Constants.FIELD_SEX, parameter, Constants.PARAM_SEX)) {
                             return false;
                         }
                         //搜索词
-                        if (!ValidUtils.equal(aggrInfo, Constants.FIELD_SEARCH_KEYWORDS, parameter, Constants.PARAM_KEYWORDS)) {
+                        if(!ValidUtils.equal(aggrInfo, Constants.FIELD_SEARCH_KEYWORDS, parameter, Constants.PARAM_KEYWORDS)) {
                             return false;
                         }
                         //点击品类id
-                        if (!ValidUtils.in(aggrInfo, Constants.FIELD_CLICK_CATEGORY_IDS, parameter, Constants.PARAM_CATEGORY_IDS)) {
+                        if(!ValidUtils.in(aggrInfo, Constants.FIELD_CLICK_CATEGORY_IDS, parameter, Constants.PARAM_CATEGORY_IDS)) {
                             return false;
                         }
 
@@ -356,23 +196,23 @@ public class UserVisitSessionAnalyzeSpark {
                      * @param visitLength
                      */
                     private void calculateVisitLength(long visitLength) {
-                        if (visitLength >= 1 && visitLength <= 3) {
+                        if(visitLength >= 1 && visitLength <= 3) {
                             sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_1s_3s);
-                        } else if (visitLength >= 4 && visitLength <= 6) {
+                        } else if(visitLength >=4 && visitLength <= 6) {
                             sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_4s_6s);
-                        } else if (visitLength >= 7 && visitLength <= 9) {
+                        } else if(visitLength >=7 && visitLength <= 9) {
                             sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_7s_9s);
-                        } else if (visitLength >= 10 && visitLength <= 30) {
+                        } else if(visitLength >=10 && visitLength <= 30) {
                             sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_10s_30s);
-                        } else if (visitLength > 30 && visitLength <= 60) {
+                        } else if(visitLength > 30 && visitLength <= 60) {
                             sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_30s_60s);
-                        } else if (visitLength > 60 && visitLength <= 180) {
+                        } else if(visitLength > 60 && visitLength <= 180) {
                             sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_1m_3m);
-                        } else if (visitLength > 180 && visitLength <= 600) {
+                        } else if(visitLength > 180 && visitLength <= 600) {
                             sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_3m_10m);
-                        } else if (visitLength > 600 && visitLength <= 1800) {
+                        } else if(visitLength > 600 && visitLength <= 1800) {
                             sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_10m_30m);
-                        } else if (visitLength > 1800) {
+                        } else if(visitLength > 1800) {
                             sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_30m);
                         }
                     }
@@ -382,17 +222,17 @@ public class UserVisitSessionAnalyzeSpark {
                      * @param stepLength
                      */
                     private void calculateStepLength(long stepLength) {
-                        if (stepLength >= 1 && stepLength <= 3) {
+                        if(stepLength >=1 && stepLength <= 3) {
                             sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_1_3);
-                        } else if (stepLength >= 4 && stepLength <= 6) {
+                        } else if(stepLength >= 4 && stepLength <= 6) {
                             sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_4_6);
-                        } else if (stepLength >= 7 && stepLength <= 9) {
+                        } else if(stepLength >= 7 && stepLength <= 9) {
                             sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_7_9);
-                        } else if (stepLength >= 10 && stepLength <= 30) {
+                        } else if(stepLength >= 10 && stepLength <= 30) {
                             sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_10_30);
-                        } else if (stepLength > 30 && stepLength <= 60) {
+                        } else if(stepLength > 30 && stepLength <= 60) {
                             sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_30_60);
-                        } else if (stepLength > 60) {
+                        } else if(stepLength > 60) {
                             sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_60);
                         }
                     }
@@ -404,7 +244,6 @@ public class UserVisitSessionAnalyzeSpark {
 
     /**
      * 按session粒度聚合数据
-     *
      * @param ss
      * @param actionRDD
      * @return
@@ -467,16 +306,16 @@ public class UserVisitSessionAnalyzeSpark {
                              * 重构之访问时长和步长统计
                              */
                             Date actionTime = DateUtils.parseTime(row.getString(4));
-                            if (startTime == null) {
+                            if(startTime == null) {
                                 startTime = actionTime;
                             }
-                            if (endTime == null) {
+                            if(endTime == null) {
                                 endTime = actionTime;
                             }
-                            if (actionTime.before(startTime)) {
+                            if(actionTime.before(startTime)) {
                                 startTime = actionTime;
                             }
-                            if (actionTime.after(endTime)) {
+                            if(actionTime.after(endTime)) {
                                 endTime = actionTime;
                             }
                             //步长统计
@@ -488,16 +327,15 @@ public class UserVisitSessionAnalyzeSpark {
                         String clickCategoryIds = StringUtils.trimComma(clickCategoryIdsBuffer.toString());
 
                         //访问时长
-                        long visitLength = (endTime.getTime() - startTime.getTime()) / 1000;
+                        long visitLength =  (endTime.getTime() - startTime.getTime()) / 1000;
 
                         //因为要和用户数据聚合，所以这里返回<userId, info>的形式
                         String partAggrInfo = Constants.FIELD_SESSION_ID + "=" + sessionId + "|"
                                 + Constants.FIELD_SEARCH_KEYWORDS + "=" + searchKeywords + "|"
-                                + Constants.FIELD_CLICK_CATEGORY_IDS + "=" + clickCategoryIds + "|"
+                                + Constants.FIELD_CLICK_CATEGORY_IDS + "=" + clickCategoryIds+ "|"
                                 + Constants.FIELD_VISIT_LENGTH + "=" + visitLength + "|"
-                                + Constants.FIELD_STEP_LENGTH + "=" + stepLength + "|"
+                                + Constants.FIELD_STEP_LENGTH + "=" + stepLength+ "|"
                                 + Constants.FIELD_START_TIME + "=" + DateUtils.formatTime(startTime);
-
 
                         return new Tuple2<Long, String>(userId, partAggrInfo);
                     }
@@ -515,8 +353,6 @@ public class UserVisitSessionAnalyzeSpark {
         });
 
         //将 session粒度的聚合数据 与 用户数据 进行聚合
-        //JavaPairRDD<Long, String> userid2PartAggrInfoRDD
-        //JavaPairRDD<Long, Row> userId2InfoRDD
         JavaPairRDD<Long, Tuple2<String, Row>> userId2FullInfoRDD = userid2PartAggrInfoRDD.join(userId2InfoRDD);
 
         JavaPairRDD<String, String> sessionId2FullInfoRDD = userId2FullInfoRDD.mapToPair(
@@ -568,7 +404,6 @@ public class UserVisitSessionAnalyzeSpark {
 
     /**
      * 计算各session范围占比，并写入mysql
-     *
      * @param value
      * @param taskId
      */
@@ -612,36 +447,36 @@ public class UserVisitSessionAnalyzeSpark {
         //TODO:这块儿其实有一个问题我不太明白，如果这样的结果累加不等于1咋办，这个误差能接受么???
         // 计算各个访问时长和访问步长的范围
         double visit_length_1s_3s_ratio = NumberUtils.formatDouble(
-                (double) visit_length_1s_3s / (double) session_count, 2);
+                (double)visit_length_1s_3s / (double)session_count, 2);
         double visit_length_4s_6s_ratio = NumberUtils.formatDouble(
-                (double) visit_length_4s_6s / (double) session_count, 2);
+                (double)visit_length_4s_6s / (double)session_count, 2);
         double visit_length_7s_9s_ratio = NumberUtils.formatDouble(
-                (double) visit_length_7s_9s / (double) session_count, 2);
+                (double)visit_length_7s_9s / (double)session_count, 2);
         double visit_length_10s_30s_ratio = NumberUtils.formatDouble(
-                (double) visit_length_10s_30s / (double) session_count, 2);
+                (double)visit_length_10s_30s / (double)session_count, 2);
         double visit_length_30s_60s_ratio = NumberUtils.formatDouble(
-                (double) visit_length_30s_60s / (double) session_count, 2);
+                (double)visit_length_30s_60s / (double)session_count, 2);
         double visit_length_1m_3m_ratio = NumberUtils.formatDouble(
-                (double) visit_length_1m_3m / (double) session_count, 2);
+                (double)visit_length_1m_3m / (double)session_count, 2);
         double visit_length_3m_10m_ratio = NumberUtils.formatDouble(
-                (double) visit_length_3m_10m / (double) session_count, 2);
+                (double)visit_length_3m_10m / (double)session_count, 2);
         double visit_length_10m_30m_ratio = NumberUtils.formatDouble(
-                (double) visit_length_10m_30m / (double) session_count, 2);
+                (double)visit_length_10m_30m / (double)session_count, 2);
         double visit_length_30m_ratio = NumberUtils.formatDouble(
-                (double) visit_length_30m / (double) session_count, 2);
+                (double)visit_length_30m / (double)session_count, 2);
 
         double step_length_1_3_ratio = NumberUtils.formatDouble(
-                (double) step_length_1_3 / (double) session_count, 2);
+                (double)step_length_1_3 / (double)session_count, 2);
         double step_length_4_6_ratio = NumberUtils.formatDouble(
-                (double) step_length_4_6 / (double) session_count, 2);
+                (double)step_length_4_6 / (double)session_count, 2);
         double step_length_7_9_ratio = NumberUtils.formatDouble(
-                (double) step_length_7_9 / (double) session_count, 2);
+                (double)step_length_7_9 / (double)session_count, 2);
         double step_length_10_30_ratio = NumberUtils.formatDouble(
-                (double) step_length_10_30 / (double) session_count, 2);
+                (double)step_length_10_30 / (double)session_count, 2);
         double step_length_30_60_ratio = NumberUtils.formatDouble(
-                (double) step_length_30_60 / (double) session_count, 2);
+                (double)step_length_30_60 / (double)session_count, 2);
         double step_length_60_ratio = NumberUtils.formatDouble(
-                (double) step_length_60 / (double) session_count, 2);
+                (double)step_length_60 / (double)session_count, 2);
 
         //将统计结果封装为domain对象
         SessionAggrStat sessionAggrStat = new SessionAggrStat();
@@ -668,6 +503,5 @@ public class UserVisitSessionAnalyzeSpark {
         sessionAggrStatDAO.insert(sessionAggrStat);
 
     }
-
 
 }

@@ -4,7 +4,7 @@ import com.rwj.offlineAnalysisPrj.dao.ISessionAggrStatDAO;
 import com.rwj.offlineAnalysisPrj.dao.ISessionRandomExtractDAO;
 import com.rwj.offlineAnalysisPrj.dao.ITaskDAO;
 import com.rwj.offlineAnalysisPrj.dao.impl.SessionAggrStatDAOImpl;
-import com.rwj.offlineAnalysisPrj.dao.impl.SessionRandomExtractDAO;
+import com.rwj.offlineAnalysisPrj.dao.impl.SessionRandomExtractDAOImpl;
 import com.rwj.offlineAnalysisPrj.dao.impl.TaskDAOImpl;
 
 /**
@@ -21,7 +21,7 @@ public class DAOFactory {
     }
 
     public static ISessionRandomExtractDAO getsessionRandomExtractDAO() {
-        return new SessionRandomExtractDAO();
+        return new SessionRandomExtractDAOImpl();
     }
 
 }

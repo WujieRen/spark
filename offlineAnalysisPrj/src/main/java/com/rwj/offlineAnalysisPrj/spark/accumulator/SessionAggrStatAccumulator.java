@@ -61,7 +61,7 @@ public class SessionAggrStatAccumulator extends AccumulatorV2<String, String> {
      */
     @Override
     public void reset() {
-        result = Constants.SESSION_COUNT + "=0|"
+        String newResult = Constants.SESSION_COUNT + "=0|"
                 + Constants.TIME_PERIOD_1s_3s + "=0|"
                 + Constants.TIME_PERIOD_4s_6s + "=0|"
                 + Constants.TIME_PERIOD_7s_9s + "=0|"
@@ -77,6 +77,7 @@ public class SessionAggrStatAccumulator extends AccumulatorV2<String, String> {
                 + Constants.STEP_PERIOD_10_30 + "=0|"
                 + Constants.STEP_PERIOD_30_60 + "=0|"
                 + Constants.STEP_PERIOD_60 + "=0";
+        result = newResult;
     }
 
     /**
@@ -149,9 +150,9 @@ public class SessionAggrStatAccumulator extends AccumulatorV2<String, String> {
                 for (String v : arrys) {
                     String oldValue = StringUtils.getFieldFromConcatString(this.result, "\\|", v);
                     if (StringUtils.isNotEmpty(oldValue)) {
-                        Integer newValue = Integer.valueOf(oldValue) + Integer.valueOf(StringUtils.getFieldFromConcatString(((SessionAggrStatAccumulator) other).value(), "\\|", v));
+                        //Integer newValue = Integer.valueOf(oldValue) + Integer.valueOf(StringUtils.getFieldFromConcatString(((SessionAggrStatAccumulator) other).value(), "\\|", v));
                         //TODO:下边这个也可以，但是在scala中不行。具体原因暂时没弄明白...
-                        //Integer newValue = Integer.valueOf(oldValue) + Integer.valueOf(StringUtils.getFieldFromConcatString(((SessionAggrStatAccumulator) other).result, "\\|", v));
+                        Integer newValue = Integer.valueOf(oldValue) + Integer.valueOf(StringUtils.getFieldFromConcatString(((SessionAggrStatAccumulator) other).result, "\\|", v));
                         if (newResult.isEmpty()) {
                             newResult = StringUtils.setFieldInConcatString(result, "\\|", v, String.valueOf(newValue));
                         }

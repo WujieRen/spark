@@ -14,6 +14,7 @@ public class DateUtils {
     public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     public static final SimpleDateFormat DATEKEY_FORMAT = new SimpleDateFormat("yyyyMMdd");
+    public static final String str = "";
 
     /**
      * 判断一个时间是否在另一个时间之前
@@ -24,11 +25,13 @@ public class DateUtils {
      */
     public static boolean before(String time1, String time2) {
         try {
-            Date dateTime1 = TIME_FORMAT.parse(time1);
-            Date dateTime2 = TIME_FORMAT.parse(time2);
+            synchronized (str) {
+                Date dateTime1 = TIME_FORMAT.parse(time1);
+                Date dateTime2 = TIME_FORMAT.parse(time2);
 
-            if (dateTime1.before(dateTime2)) {
-                return true;
+                if (dateTime1.before(dateTime2)) {
+                    return true;
+                }
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -45,11 +48,12 @@ public class DateUtils {
      */
     public static boolean after(String time1, String time2) {
         try {
-            Date dateTime1 = TIME_FORMAT.parse(time1);
-            Date dateTime2 = TIME_FORMAT.parse(time2);
-
+            synchronized (str) {
+                Date dateTime1 = TIME_FORMAT.parse(time1);
+                Date dateTime2 = TIME_FORMAT.parse(time2);
             if (dateTime1.after(dateTime2)) {
                 return true;
+            }
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -66,12 +70,14 @@ public class DateUtils {
      */
     public static int minus(String time1, String time2) {
         try {
-            Date dateTime1 = TIME_FORMAT.parse(time1);
-            Date dateTime2 = TIME_FORMAT.parse(time2);
+            synchronized (str) {
+                Date dateTime1 = TIME_FORMAT.parse(time1);
+                Date dateTime2 = TIME_FORMAT.parse(time2);
 
-            long millisecond = dateTime1.getTime() - dateTime2.getTime();
+                long millisecond = dateTime1.getTime() - dateTime2.getTime();
 
-            return Integer.valueOf(String.valueOf(millisecond / 1000));
+                return Integer.valueOf(String.valueOf(millisecond / 1000));
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -132,18 +138,26 @@ public class DateUtils {
      * @return 格式化后的时间
      */
     public static String formatTime(Date date) {
-        return TIME_FORMAT.format(date);
+        //final SimpleDateFormat TIME_FORMATS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        synchronized (str) {
+            return TIME_FORMAT.format(date);
+        }
     }
 
     /**
      * 解析时间字符串
      *
      * @param time 时间字符串
+     *             2018-01-17 17:56:50
      * @return Date
      */
     public static Date parseTime(String time) {
         try {
-            return TIME_FORMAT.parse(time);
+            String str = "";
+            synchronized (str) {
+                return TIME_FORMAT.parse(time);
+            }
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -179,4 +193,28 @@ public class DateUtils {
         return sdf.format(date);
     }
 
+    /*public static void main(String[] args) throws ParseException {
+        TimeUnit.MICROSECONDS.toDays(100);
+        for (int i = 0 ; i < 10 ; i ++ ) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date d = null;
+                    try {
+                        d = TIME_FORMAT.parse("2018-01-17 17:56:50");
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println(Thread.currentThread().getName()+"--->"+d);
+
+                }
+            }).start();
+        }
+    }*/
+
+    public static void main(String[] args) {
+        Date d = new Date("2018-01-17 17:56:50");
+
+    }
 }

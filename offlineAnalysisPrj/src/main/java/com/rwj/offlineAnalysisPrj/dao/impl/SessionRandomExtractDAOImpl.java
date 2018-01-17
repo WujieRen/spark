@@ -7,7 +7,7 @@ import com.rwj.offlineAnalysisPrj.jdbc.JdbcHelper;
 /**
  * Created by renwujie on 2018/01/16 at 18:07
  */
-public class SessionRandomExtractDAO implements ISessionRandomExtractDAO {
+public class SessionRandomExtractDAOImpl implements ISessionRandomExtractDAO {
 
     @Override
     public void insert(SessionRandomExtract sessionRandomExtract) {
@@ -16,8 +16,9 @@ public class SessionRandomExtractDAO implements ISessionRandomExtractDAO {
                 sessionRandomExtract.getTaskId(),
                 sessionRandomExtract.getSessionId(),
                 sessionRandomExtract.getStartTime(),
-                sessionRandomExtract.getSearchKeywords(),
-                sessionRandomExtract.getClickCategoryIds()
+                sessionRandomExtract.getClickCategoryIds(),
+                sessionRandomExtract.getSearchKeywords()
+
         };
 
         System.out.println(sessionRandomExtract.getSearchKeywords());

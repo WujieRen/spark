@@ -26,10 +26,11 @@ public class ValidUtils {
             return true;
         }
 
+        int startSet = Integer.valueOf(startParamFieldStr);
+        int endSet = Integer.valueOf(endParamFieldStr);
         String dataFieldStr = StringUtils.getFieldFromConcatString(data, "\\|", dataField);
+
         if (dataFieldStr != null) {
-            int startSet = Integer.valueOf(startParamFieldStr);
-            int endSet = Integer.valueOf(endParamFieldStr);
             int dataSet = Integer.valueOf(dataFieldStr);
 
             if (dataSet >= startSet && dataSet <= endSet) {
@@ -59,9 +60,10 @@ public class ValidUtils {
             return true;
         }
 
+        String[] paramFieldValueSplited = paramFieldValue.split(",");
         String dataFieldValue = StringUtils.getFieldFromConcatString(data, "\\|", dataField);
+
         if (dataFieldValue != null) {
-            String[] paramFieldValueSplited = paramFieldValue.split(",");
             String[] dataFieldValueSplited = dataFieldValue.split(",");
 
             for (String v1 : paramFieldValueSplited) {

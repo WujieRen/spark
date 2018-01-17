@@ -52,7 +52,7 @@ public class MockData {
                     if("search".equals(action)) {
                         searchKeyword = searchKeywords[random.nextInt(15)];
                     } else if("click".equals(action)) {
-                        if(clickCategoryId == null) {
+                        if(clickCategoryId == -1L) {
                             clickCategoryId = Long.valueOf(String.valueOf(random.nextInt(100)));
                         }
 
@@ -98,7 +98,7 @@ public class MockData {
 
         df.registerTempTable("user_visit_action");
 
-        df.printSchema();
+        //df.printSchema();
         System.out.println(df.collectAsList().get(1));
         df.write().mode(SaveMode.Append).format("json").save("T:\\testdata\\sparkprj\\user_visit_action");
 
@@ -138,7 +138,7 @@ public class MockData {
 
         df2.registerTempTable("user_info");
 
-        df2.printSchema();
+        //df2.printSchema();
         System.out.println(df2.collectAsList().get(1));
         df.write().mode(SaveMode.Append).format("json").save("T:\\testdata\\sparkprj\\user_info");
 
@@ -168,7 +168,7 @@ public class MockData {
         ));
 
         Dataset df3 = ss.createDataFrame(rowsRDD, schema3);
-        df3.printSchema();
+        //df3.printSchema();
 
         df3.registerTempTable("product_info");
         System.out.println(df3.collectAsList().get(1));

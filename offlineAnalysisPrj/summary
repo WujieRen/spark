@@ -122,5 +122,23 @@
 
             另外，必须要把能够触发job执行的操作，放在最终写入MySQL方法之前。
 
+2018/1/17
+    问题一：百分百比计算有误
+        原因：业务没理解清楚
+        解决：找半天找不到问题，最终发现是业务理解有误。访问时长统计 和 步长统计 是互相独立的。两者算的是分别占比。总和应该是2。(妈个鸡...从昨晚弄到现在，找了7个小时发现没bug...)
+
+
+    问题二：随机抽取数据插入无效
+        解决： 问题在于没有action动作触发那个RDD执行，导致flatMapToPair()方法没有执行。
+
+    问题三：session_random_extract表中，category_ids全是NULL
+        原因：修改时没有把相关有需要代码都改掉。
+        解决： 在MockData时，前面把 clickCategoryId 的值通过替换成-1L来解决row.getLong()报 NullPointerException 。结果在mockData时忘记把筛选条件改掉了，导致不会往 clickCategoryId 中放任何值。
+
+    问题四：local[*]报错
+        原因：SimpleDateFormat是非线程安全类，多线程调用时报错。
+        解决：synchronized
+
+
 
 
