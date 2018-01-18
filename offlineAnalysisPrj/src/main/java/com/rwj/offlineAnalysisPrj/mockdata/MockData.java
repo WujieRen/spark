@@ -99,8 +99,7 @@ public class MockData {
         df.registerTempTable("user_visit_action");
 
         //df.printSchema();
-        System.out.println(df.collectAsList().get(1));
-        df.write().mode(SaveMode.Append).format("json").save("T:\\testdata\\sparkprj\\user_visit_action");
+        df.write().mode(SaveMode.Append).parquet("T:\\testdata\\sparkprj\\user_visit_action");
 
         /**
          * ==================================================================
@@ -139,8 +138,7 @@ public class MockData {
         df2.registerTempTable("user_info");
 
         //df2.printSchema();
-        System.out.println(df2.collectAsList().get(1));
-        df.write().mode(SaveMode.Append).format("json").save("T:\\testdata\\sparkprj\\user_info");
+        df2.write().mode(SaveMode.Append).parquet("T:\\testdata\\sparkprj\\user_info");
 
         /**
          * ==================================================================
@@ -171,7 +169,6 @@ public class MockData {
         //df3.printSchema();
 
         df3.registerTempTable("product_info");
-        System.out.println(df3.collectAsList().get(1));
-        df.write().mode(SaveMode.Append).format("json").save("T:\\testdata\\sparkprj\\product_info");
+        df3.write().mode(SaveMode.Append).parquet("T:\\testdata\\sparkprj\\product_info");
     }
 }

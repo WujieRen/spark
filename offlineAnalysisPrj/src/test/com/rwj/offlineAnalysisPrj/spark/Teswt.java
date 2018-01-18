@@ -3,17 +3,11 @@ package com.rwj.offlineAnalysisPrj.spark;
 import com.alibaba.fastjson.JSONObject;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
 import com.rwj.offlineAnalysisPrj.dao.ISessionAggrStatDAO;
-import com.rwj.offlineAnalysisPrj.dao.ITaskDAO;
 import com.rwj.offlineAnalysisPrj.dao.factory.DAOFactory;
 import com.rwj.offlineAnalysisPrj.domain.SessionAggrStat;
-import com.rwj.offlineAnalysisPrj.domain.Task;
-import com.rwj.offlineAnalysisPrj.mockdata.MockData;
-import com.rwj.offlineAnalysisPrj.spark.accumulator.SessionAggrStatAccumulator;
 import com.rwj.offlineAnalysisPrj.util.*;
-import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.sql.Dataset;
@@ -65,7 +59,7 @@ public class Teswt {
 
     public static void main(String[] args) {
 
-        args = new String[]{"1"};
+        /*args = new String[]{"1"};
 
         SparkSession ss = SparkSession.builder()
                 .master("local[*]")
@@ -106,7 +100,7 @@ public class Teswt {
         //计算出各个范围的session占比，并写入MySQL
         calculateAndPersistAggrStat(sessionAggrStatAccumulator.value(), task.getTaskid());
 
-        ss.close();
+        ss.close();*/
     }
 
     /**

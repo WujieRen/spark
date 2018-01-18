@@ -31,7 +31,7 @@ public class SparkUtils {
      * @param sqlContext
      */
     public static void mockData(JavaSparkContext sc, SQLContext sqlContext) {
-            //MockData.mock(sc, sqlContext);
+            //TestMockData.mock(sc, sqlContext);
     }
 
 

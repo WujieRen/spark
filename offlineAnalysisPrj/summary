@@ -144,6 +144,7 @@
 
     问题二：想注释掉无意义的控制台输出，结果不能注释掉两个mockData中的df.collect，具体原因不明。
         //TODO:原因：原因不明。
+        解决：换成parquet格式保存后没问题了，不知道是不是csv的问题。
 
     问题三：Exception in thread "main" java.lang.NumberFormatException: Infinite or NaN
         原因：除数(session_count)为0。怎么会是0 呢？???——没调用该job。

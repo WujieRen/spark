@@ -1,15 +1,8 @@
-package com.rwj.offlineAnalysisPrj.test.mock_data_test;
+package com.rwj.offlineAnalysisPrj.mockdata;
 
-import com.rwj.offlineAnalysisPrj.util.DateUtils;
-import com.rwj.offlineAnalysisPrj.util.StringUtils;
 import org.apache.spark.SparkContext;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.*;
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.StructType;
-
-import java.util.*;
+import org.apache.spark.sql.SparkSession;
 
 /**
  * Created by renwujie on 2018/01/09 at 20:06
@@ -17,12 +10,12 @@ import java.util.*;
  * 模拟数据
  *
  */
-public class TestMockData {
+public class MockData {
 
     /**
      * 模拟数据
      */
-    public static void mock(JavaSparkContext sc, SparkSession ss){
+    /*public static void mock(JavaSparkContext sc, SparkSession ss){
         List<Row> rows = new ArrayList<Row>();
 
         String[] searchKeywords = new String[]{"问道听香火锅", "顾城粉巷子", "蛋糕", "黄焖鸡", "重庆小面", "担担面", "九九鸭脖", "国贸大厦", "潮汕牛肉海鲜", "温泉", "烧烤", "串串", "西安牛奶", "裤带面", "哨子面"};
@@ -100,11 +93,12 @@ public class TestMockData {
         df.registerTempTable("user_visit_action");
 
         //df.printSchema();
-        df.write().mode(SaveMode.Append).parquet("T:\\testdata\\sparkprj_new\\user_visit_action");
+        System.out.println(df.collectAsList().get(1));
+        df.write().parquet("T:\\testdata\\sparkprj_new\\user_visit_action");
 
-        /**
+        *//**
          * ==================================================================
-         */
+         *//*
 
         rows.clear();
 
@@ -139,11 +133,12 @@ public class TestMockData {
         df2.registerTempTable("user_info");
 
         //df2.printSchema();
-        df2.write().mode(SaveMode.Append).parquet("T:\\testdata\\sparkprj_new\\user_info");
+        System.out.println(df2.collectAsList().get(1));
+        df2.write().mode(SaveMode.Append).csv("T:\\testdata\\sparkprj_new\\user_info");
 
-        /**
+        *//**
          * ==================================================================
-         */
+         *//*
 
         rows.clear();
 
@@ -170,14 +165,16 @@ public class TestMockData {
         //df3.printSchema();
 
         df3.registerTempTable("product_info");
-        df3.write().mode(SaveMode.Append).parquet("T:\\testdata\\sparkprj_new\\product_info");
-    }
+        System.out.println(df3.collectAsList().get(1));
+        df3.write().mode(SaveMode.Append).saveAsTable("T:\\testdata\\sparkprj\\product_info");
+    }*/
 
     public static void main(String[] args){
-        SparkSession ss = SparkSession.builder().master("local[*]").appName("testockData").getOrCreate();
+        SparkSession ss = SparkSession.builder().master("local").appName("testockData").getOrCreate();
          SparkContext sc = ss.sparkContext();
          JavaSparkContext jsc = JavaSparkContext.fromSparkContext(sc);
 
-        mock(jsc, ss);
+        System.out.println("_---------------------");
+        //mock(jsc, ss);
     }
 }

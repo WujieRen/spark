@@ -240,8 +240,6 @@ public class UserVisitSessionAnalyzeSpark {
                         Iterator<String> iterator = tuple._2.iterator();
                         List<Integer> extractIndexList = dateHourExtractMap.get(date).get(hour);
 
-                        System.out.println(extractIndexList.toString());
-
                         List<Tuple2<String, String>> extractSessionids = new ArrayList<Tuple2<String, String>>();
 
                         ISessionRandomExtractDAO sessionRandomExtractDAO = DAOFactory.getsessionRandomExtractDAO();
@@ -253,8 +251,6 @@ public class UserVisitSessionAnalyzeSpark {
 
                             if(extractIndexList.contains(index)) {
                                 String sessionId = StringUtils.getFieldFromConcatString(sessionAggrInfo, "\\|", Constants.FIELD_SESSION_ID);
-
-                                System.out.println(index+"---------");
 
                                 SessionRandomExtract sessionRandomExtract = new SessionRandomExtract();
                                 sessionRandomExtract.setTaskId(taskId);
