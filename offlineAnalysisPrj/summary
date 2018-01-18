@@ -138,6 +138,24 @@
     问题四：local[*]报错
         原因：SimpleDateFormat是非线程安全类，多线程调用时报错。
         解决：synchronized
+2018/1/18
+    问题一：往sexxion_random_extract写数据时速度极慢，且数量不正确。
+        //TODO:解决：换了一下...的位置。为什么还一下这个位置效果这么不一样？？？
+
+    问题二：想注释掉无意义的控制台输出，结果不能注释掉两个mockData中的df.collect，具体原因不明。
+        //TODO:原因：原因不明。
+
+    问题三：Exception in thread "main" java.lang.NumberFormatException: Infinite or NaN
+        原因：除数(session_count)为0。怎么会是0 呢？???——没调用该job。
+
+    问题四：session_count的个数会比filter..RDD多一条，why???
+        //TODO:原因不明
+
+    问题五：按照每天应该取100，为何最后总是不够100，差8条左右。
+        原因：double强转int会把小数点后的截掉。而不是四舍五入。
+
+
+
 
 
 

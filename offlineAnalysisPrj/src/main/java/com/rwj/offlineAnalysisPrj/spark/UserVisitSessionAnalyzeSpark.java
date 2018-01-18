@@ -92,7 +92,7 @@ public class UserVisitSessionAnalyzeSpark {
         //对数据按照sessionId进行groupBy(聚合)，然后与用户信息进行join就是session粒度的包含session和用户信息的数据了。
         //Tuple2<String, String>(sessionId, fullAggrInfo)
         JavaPairRDD<String, String> sessionid2AggrInfoRDD = aggregateBySession(ss, actionRDD);
-        System.out.println(sessionid2AggrInfoRDD.count() + "----------------------------" + sessionid2AggrInfoRDD.first().toString());
+        System.out.println(sessionid2AggrInfoRDD.count() + "---" + sessionid2AggrInfoRDD.first().toString());
 
         //重构，同时进行统计和过滤
         //注册自定义过滤器。reference:http://spark.apache.org/docs/latest/rdd-programming-guide.html#accumulators
@@ -104,7 +104,7 @@ public class UserVisitSessionAnalyzeSpark {
         //匿名内部类(算子函数)，访问外部对象，要将外部对象用final修饰
         //Tuple2<String, String>(sessionId, fullAggrInfo)
         JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD = filterSessionAndAggrStat(sessionid2AggrInfoRDD, taskParam, sessionAggrStatAccumulator);
-        System.out.println(filteredSessionid2AggrInfoRDD.count() + "----------------------------" + filteredSessionid2AggrInfoRDD.first().toString());
+        System.out.println(filteredSessionid2AggrInfoRDD.count() + "---" + filteredSessionid2AggrInfoRDD.first().toString());
 
         //计算出各个范围的session占比，并写入MySQL
         calculateAndPersistAggrStat(sessionAggrStatAccumulator.value(), taskId);
@@ -152,14 +152,21 @@ public class UserVisitSessionAnalyzeSpark {
             long count = Long.valueOf(entry.getValue());
 
             //这里当get 新date 时，值一定为null，这时要新建一个容器，来存放这个新date的Map。而如果这个 date 是已存在的，就不需要新建，直接添加在旧容器中即可。
-            Map<String, Long> hourCountMap = dateHourCountMap.get(date);
+           /* Map<String, Long> hourCountMap = dateHourCountMap.get(date);
             if (hourCountMap == null) {
                 hourCountMap = new HashMap<String, Long>();
                 hourCountMap.put(hour, count);
             } else {
                 hourCountMap.put(hour, count);
             }
-            dateHourCountMap.put(date, hourCountMap);
+            dateHourCountMap.put(date, hourCountMap);*/
+            Map<String, Long> hourCountMap = dateHourCountMap.get(date);
+            if(hourCountMap == null) {
+                hourCountMap = new HashMap<String, Long>();
+                dateHourCountMap.put(date, hourCountMap);
+            }
+
+            hourCountMap.put(hour, count);
         }
 
         //②算出每天要抽取的数量，假设总共抽取100个
@@ -233,15 +240,21 @@ public class UserVisitSessionAnalyzeSpark {
                         Iterator<String> iterator = tuple._2.iterator();
                         List<Integer> extractIndexList = dateHourExtractMap.get(date).get(hour);
 
+                        System.out.println(extractIndexList.toString());
+
                         List<Tuple2<String, String>> extractSessionids = new ArrayList<Tuple2<String, String>>();
 
                         ISessionRandomExtractDAO sessionRandomExtractDAO = DAOFactory.getsessionRandomExtractDAO();
 
                         int index = 0;
                         while(iterator.hasNext()) {
+                            //TODO：这里不明白，为什么这个换个位置差别会这么大???
+                            String sessionAggrInfo = iterator.next();
+
                             if(extractIndexList.contains(index)) {
-                                String sessionAggrInfo = iterator.next();
                                 String sessionId = StringUtils.getFieldFromConcatString(sessionAggrInfo, "\\|", Constants.FIELD_SESSION_ID);
+
+                                System.out.println(index+"---------");
 
                                 SessionRandomExtract sessionRandomExtract = new SessionRandomExtract();
                                 sessionRandomExtract.setTaskId(taskId);
@@ -264,8 +277,7 @@ public class UserVisitSessionAnalyzeSpark {
                     }
                 }
         );
-
-        System.out.println(extractSessionidsRDD.count() + "~~~~~~~~~~~~~~~~~~~~~~");
+        System.out.println(extractSessionidsRDD.count());
     }
 
     /**
@@ -341,6 +353,7 @@ public class UserVisitSessionAnalyzeSpark {
 
                         //session个数
                         sessionAggrStatAccumulator.add(Constants.SESSION_COUNT);
+
                         //访问时长和访问步长
                         long visitLength = Long.valueOf(StringUtils.getFieldFromConcatString(aggrInfo, "\\|", Constants.FIELD_VISIT_LENGTH));
                         long stepLength = Long.valueOf(StringUtils.getFieldFromConcatString(aggrInfo, "\\|", Constants.FIELD_STEP_LENGTH));
@@ -576,6 +589,8 @@ public class UserVisitSessionAnalyzeSpark {
         //从Accumulator统计结果中获取响应字段的值
         long session_count = Long.valueOf(StringUtils.getFieldFromConcatString(value, "\\|", Constants.SESSION_COUNT));
 
+        System.out.println(session_count);
+
         long visit_length_1s_3s = Long.valueOf(StringUtils.getFieldFromConcatString(
                 value, "\\|", Constants.TIME_PERIOD_1s_3s));
         long visit_length_4s_6s = Long.valueOf(StringUtils.getFieldFromConcatString(
@@ -609,7 +624,6 @@ public class UserVisitSessionAnalyzeSpark {
                 value, "\\|", Constants.STEP_PERIOD_60));
 
         //计算各个访问时长和访问步长的范围
-        //TODO:这块儿其实有一个问题我不太明白，如果这样的结果累加不等于1咋办，这个误差能接受么???
         // 计算各个访问时长和访问步长的范围
         double visit_length_1s_3s_ratio = NumberUtils.formatDouble(
                 (double) visit_length_1s_3s / (double) session_count, 2);

@@ -21,8 +21,6 @@ public class SessionRandomExtractDAOImpl implements ISessionRandomExtractDAO {
 
         };
 
-        System.out.println(sessionRandomExtract.getSearchKeywords());
-
         JdbcHelper jdbcHelper = JdbcHelper.getInstance();
         jdbcHelper.executeUpdate(sql,params);
     }
