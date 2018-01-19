@@ -55,7 +55,6 @@ public class MockData {
                         if(clickCategoryId == -1L) {
                             clickCategoryId = Long.valueOf(String.valueOf(random.nextInt(100)));
                         }
-
                         clickProductId = Long.valueOf(String.valueOf(random.nextInt(100)));
                     } else if("order".equals(action)) {
                         orderCategoryIds = String.valueOf(random.nextInt(100));

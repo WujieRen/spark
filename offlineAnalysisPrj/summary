@@ -163,8 +163,14 @@
 
         问题四：session_count的个数会比filter..RDD多一条，why???
              //TODO:原因不明
-             解决：原因是对 spark 的 transfer & action 理解不够。再对前两次RDD进行count()操作时，因为没有cache()导致 Spark 每次都对 RDD 进行重新计算，于是结果翻了2倍。多的那一条也在cache()后被解决。由此猜测时在count()前没有cache()导致对对数据集的重新计算。
-                更准确地说，是filter中对Accumulator进行计数的那段被重复调用了。
+             解决：
+                -> 原因是对 spark 的 transfer & action 理解不够。再对前两次RDD进行count()操作时，因为没有cache()导致 Spark 每次都对 RDD 进行重新计算，于是结果翻了2倍。多的那一条也在cache()后被解决。由此猜测时在count()前没有cache()导致对对数据集的重新计算。
+                -> 更准确地说，是filter中对Accumulator进行计数的那段被重复调用了。
+             reference:
+                http://blog.csdn.net/u013468917/article/details/70617085
+                http://bit1129.iteye.com/blog/2182146
 
+    功能：
+        1. 抽取session明细数据完成。
 
 

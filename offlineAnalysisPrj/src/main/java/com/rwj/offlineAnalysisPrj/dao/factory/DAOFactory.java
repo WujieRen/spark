@@ -1,9 +1,11 @@
 package com.rwj.offlineAnalysisPrj.dao.factory;
 
 import com.rwj.offlineAnalysisPrj.dao.ISessionAggrStatDAO;
+import com.rwj.offlineAnalysisPrj.dao.ISessionDetailDAO;
 import com.rwj.offlineAnalysisPrj.dao.ISessionRandomExtractDAO;
 import com.rwj.offlineAnalysisPrj.dao.ITaskDAO;
 import com.rwj.offlineAnalysisPrj.dao.impl.SessionAggrStatDAOImpl;
+import com.rwj.offlineAnalysisPrj.dao.impl.SessionDetailDAOImpl;
 import com.rwj.offlineAnalysisPrj.dao.impl.SessionRandomExtractDAOImpl;
 import com.rwj.offlineAnalysisPrj.dao.impl.TaskDAOImpl;
 
@@ -24,4 +26,7 @@ public class DAOFactory {
         return new SessionRandomExtractDAOImpl();
     }
 
+    public static ISessionDetailDAO getSessionDetailDAO(){
+        return new SessionDetailDAOImpl();
+    }
 }
