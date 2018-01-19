@@ -156,6 +156,7 @@ public class SessionAggrStatAccumulator extends AccumulatorV2<String, String> {
                         if (newResult.isEmpty()) {
                             newResult = StringUtils.setFieldInConcatString(result, "\\|", v, String.valueOf(newValue));
                         }
+
                         newResult = StringUtils.setFieldInConcatString(newResult, "\\|", v, String.valueOf(newValue));
                     }
                 }

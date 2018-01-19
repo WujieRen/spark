@@ -1,4 +1,4 @@
-package com.rwj.offlineAnalysisPrj.spark;
+package com.rwj.offlineAnalysisPrj.test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
@@ -94,7 +94,7 @@ public class UserVisitSessionAnalyzeSpark {
         //对数据按照sessionId进行groupBy(聚合)，然后与用户信息进行join就是session粒度的包含session和用户信息的数据了。
         //Tuple2<String, String>(sessionId, fullAggrInfo)
         JavaPairRDD<String, String> sessionid2AggrInfoRDD = aggregateBySession(ss, sessionid2actionRDD);
-        //System.out.println(sessionid2AggrInfoRDD.count() + "---" + sessionid2AggrInfoRDD.first().toString());
+        System.out.println(sessionid2AggrInfoRDD.cache().count() + "---" + sessionid2AggrInfoRDD.first().toString());
 
         //重构，同时进行统计和过滤
         //注册自定义过滤器。reference:http://spark.apache.org/docs/latest/rdd-programming-guide.html#accumulators
@@ -106,7 +106,7 @@ public class UserVisitSessionAnalyzeSpark {
         //匿名内部类(算子函数)，访问外部对象，要将外部对象用final修饰
         //Tuple2<String, String>(sessionId, fullAggrInfo)
         JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD = filterSessionAndAggrStat(sessionid2AggrInfoRDD, taskParam, sessionAggrStatAccumulator);
-        //System.out.println(filteredSessionid2AggrInfoRDD.count() + "---" + filteredSessionid2AggrInfoRDD.first().toString());
+        System.out.println(filteredSessionid2AggrInfoRDD.cache().count() + "---" + filteredSessionid2AggrInfoRDD.first().toString());
 
         randomExtractSession(task.getTaskid(), filteredSessionid2AggrInfoRDD);
 
@@ -605,6 +605,7 @@ public class UserVisitSessionAnalyzeSpark {
         //从Accumulator统计结果中获取响应字段的值
         long session_count = Long.valueOf(StringUtils.getFieldFromConcatString(value, "\\|", Constants.SESSION_COUNT));
 
+        //TODO:一开始因为 sessionid2AggrInfoRDD & filteredSessionid2AggrInfoRDD 进行count()前没有cache，导致重新计算，触发多次Accumulator，导致最终结果总是 3x+1。 这个+1也不知到从哪儿来的，在cache()后，结果正常。说明是对cache理解有误。对 Spark transfer & action 理解不够深刻。
         System.out.println(session_count);
 
         long visit_length_1s_3s = Long.valueOf(StringUtils.getFieldFromConcatString(
