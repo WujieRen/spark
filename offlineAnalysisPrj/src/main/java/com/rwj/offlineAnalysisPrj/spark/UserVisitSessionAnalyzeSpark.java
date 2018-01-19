@@ -94,7 +94,8 @@ public class UserVisitSessionAnalyzeSpark {
         //对数据按照sessionId进行groupBy(聚合)，然后与用户信息进行join就是session粒度的包含session和用户信息的数据了。
         //Tuple2<String, String>(sessionId, fullAggrInfo)
         JavaPairRDD<String, String> sessionid2AggrInfoRDD = aggregateBySession(ss, sessionid2actionRDD);
-        //System.out.println(sessionid2AggrInfoRDD.count() + "---" + sessionid2AggrInfoRDD.first().toString());
+        //sessionid2actionRDD.cache();
+        //System.out.println(sessionid2AggrInfoRDD.cache().count() + "---" + sessionid2AggrInfoRDD.first().toString());
 
         //重构，同时进行统计和过滤
         //注册自定义过滤器。reference:http://spark.apache.org/docs/latest/rdd-programming-guide.html#accumulators
@@ -106,14 +107,13 @@ public class UserVisitSessionAnalyzeSpark {
         //匿名内部类(算子函数)，访问外部对象，要将外部对象用final修饰
         //Tuple2<String, String>(sessionId, fullAggrInfo)
         JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD = filterSessionAndAggrStat(sessionid2AggrInfoRDD, taskParam, sessionAggrStatAccumulator);
-        //System.out.println(filteredSessionid2AggrInfoRDD.count() + "---" + filteredSessionid2AggrInfoRDD.first().toString());
+        filteredSessionid2AggrInfoRDD.cache();
+        //System.out.println(filteredSessionid2AggrInfoRDD.cache().count() + "---" + filteredSessionid2AggrInfoRDD.first().toString());
 
         randomExtractSession(task.getTaskid(), filteredSessionid2AggrInfoRDD);
 
         //计算出各个范围的session占比，并写入MySQL
         calculateAndPersistAggrStat(sessionAggrStatAccumulator.value(), taskId);
-
-
 
         ss.close();
     }

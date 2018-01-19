@@ -1,4 +1,4 @@
-package com.rwj.offlineAnalysisPrj.test;
+package com.rwj.offlineAnalysisPrj.test.spark;
 
 import com.alibaba.fastjson.JSONObject;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
