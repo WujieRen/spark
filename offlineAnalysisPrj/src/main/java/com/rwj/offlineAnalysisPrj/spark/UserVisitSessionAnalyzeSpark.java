@@ -18,10 +18,7 @@ import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.Function;
-import org.apache.spark.api.java.function.PairFlatMapFunction;
-import org.apache.spark.api.java.function.PairFunction;
-import org.apache.spark.api.java.function.VoidFunction;
+import org.apache.spark.api.java.function.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -121,6 +118,213 @@ public class UserVisitSessionAnalyzeSpark {
         calculateAndPersistAggrStat(sessionAggrStatAccumulator.value(), taskId);
 
         ss.close();
+    }
+
+    /**
+     * 获取top10热门品类
+     *  参数中的条件满足的session才算，如某个品类，搜索的某个词等
+     * @param filteredSessionid2AggrInfoRDD
+     * @param sessionid2actionRDD
+     */
+    private static void getTop10Category(JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD, JavaPairRDD<String, Row> sessionid2actionRDD) {
+        //第一步：取得符合条件的session访问过的所有品类
+        JavaPairRDD<String, Row> sessionid2detailRDD = filteredSessionid2AggrInfoRDD.join(sessionid2actionRDD).mapToPair(
+                new PairFunction<Tuple2<String, Tuple2<String, Row>>, String, Row>() {
+                    @Override
+                    public Tuple2<String, Row> call(Tuple2<String, Tuple2<String, Row>> tuple) throws Exception {
+                        String sessionId = tuple._1;
+                        Row row = tuple._2._2;
+                        return new Tuple2<String, Row>(sessionId, row);
+                    }
+                }
+        );
+
+        // 访问过：指的是，点击过、下单过、支付过的品类
+        JavaPairRDD<Long, Long> categoryidRDD = sessionid2detailRDD.flatMapToPair(
+                new PairFlatMapFunction<Tuple2<String,Row>, Long, Long>() {
+                    @Override
+                    public Iterator<Tuple2<Long, Long>> call(Tuple2<String, Row> tuple) throws Exception {
+                        Row row = tuple._2;
+
+                        List<Tuple2<Long, Long>> list = new ArrayList<>();
+
+                        //点击
+                        Long clickCategoryId = row.getLong(6);
+                        if(clickCategoryId != -1L) {
+                            list.add(new Tuple2<Long, Long>(clickCategoryId, clickCategoryId));
+                        }
+                        //下单
+                        String orderCategoryIds = row.getString(8);
+                        if(orderCategoryIds != null) {
+                            String[] orderCategoryIdsSplited = orderCategoryIds.split(",");
+                            for(String orderCategoryId : orderCategoryIdsSplited) {
+                                list.add(new Tuple2<Long, Long>(Long.valueOf(orderCategoryId), Long.valueOf(orderCategoryId)));
+                            }
+                        }
+                        //支付
+                        String payCategoryIds = row.getString(10);
+                        if(payCategoryIds != null) {
+                            String[] payCategoryIdsSplited = payCategoryIds.split(",");
+                            for(String payCategoryId : payCategoryIdsSplited) {
+                                list.add(new Tuple2<Long, Long>(Long.valueOf(payCategoryId), Long.valueOf(payCategoryId)));
+                            }
+
+                        }
+
+                        return list.iterator();
+                    }
+                }
+        );
+
+        /**
+         * 第二步：计算各品类的点击、下单和支付的次数
+         */
+
+        // 访问明细中，其中三种访问行为是：点击、下单和支付
+        // 分别来计算各品类点击、下单和支付的次数，可以先对访问明细数据进行过滤
+        // 分别过滤出点击、下单和支付行为，然后通过map、reduceByKey等算子来进行计算
+
+        // 计算各个品类的点击次数
+        JavaPairRDD<Long, Long> clickCategoryId2CountRDD =
+                getClickCategoryId2CountRDD(sessionid2detailRDD);
+        // 计算各个品类的下单次数
+        JavaPairRDD<Long, Long> orderCategoryId2CountRDD =
+                getOrderCategoryId2CountRDD(sessionid2detailRDD);
+        // 计算各个品类的支付次数
+        JavaPairRDD<Long, Long> payCategoryId2CountRDD =
+                getPayCategoryId2CountRDD(sessionid2detailRDD);
+
+    }
+
+    /**
+     * 获取各个品类的支付次数RDD
+     * @param sessionid2detailRDD
+     * @return
+     */
+    private static JavaPairRDD<Long,Long> getPayCategoryId2CountRDD(JavaPairRDD<String, Row> sessionid2detailRDD) {
+        //①： 过滤获取有点击行为的RDD
+        JavaPairRDD<String, Row> payActionRDD = sessionid2detailRDD.filter(
+                new Function<Tuple2<String, Row>, Boolean>() {
+                    @Override
+                    public Boolean call(Tuple2<String, Row> v) throws Exception {
+                        Row row = v._2;
+                        return row.getString(10) != null ? true : false;
+                    }
+                }
+        );
+        //②： 过滤后对出现的clickCategoryId组合成<clickCategoryId, 1L>的形式
+        JavaPairRDD<Long, Long> payCategoryIdRDD = payActionRDD.flatMapToPair(
+                new PairFlatMapFunction<Tuple2<String,Row>, Long, Long>() {
+                    @Override
+                    public Iterator<Tuple2<Long, Long>> call(Tuple2<String, Row> tuple) throws Exception {
+                        String payCategoryIds = tuple._2.getString(11);
+                        String[] payCategoryIdsSplited = payCategoryIds.split(",");
+
+                        List<Tuple2<Long, Long>> list = new ArrayList<>();
+
+                        for(String payCategoryId : payCategoryIdsSplited) {
+                            list.add(new Tuple2<>(Long.valueOf(payCategoryId), 1L));
+                        }
+
+                        return list.iterator();
+                    }
+                }
+        );
+        //③： 对上一步的结果reduceByKey()即可得到<clickCategory, count>
+        JavaPairRDD<Long, Long> payCategoryId2CountRDD = payCategoryIdRDD.reduceByKey(
+                new Function2<Long, Long, Long>() {
+                    @Override
+                    public Long call(Long v1, Long v2) throws Exception {
+                        return v1 + v2;
+                    }
+                }
+        );
+
+        return payCategoryId2CountRDD;
+    }
+
+    /**
+     * 获取各品类的下单次数RDD
+     * @param sessionid2detailRDD
+     * @return
+     */
+    private static JavaPairRDD<Long,Long> getOrderCategoryId2CountRDD(JavaPairRDD<String, Row> sessionid2detailRDD) {
+        //①： 过滤获取有点击行为的RDD
+        JavaPairRDD<String, Row> orderActionRDD = sessionid2detailRDD.filter(new Function<Tuple2<String, Row>, Boolean>() {
+            @Override
+            public Boolean call(Tuple2<String, Row> v) throws Exception {
+                Row row = v._2;
+                return row.getString(8) != null ? true : false;
+            }
+        });
+        //②： 过滤后对出现的clickCategoryId组合成<clickCategoryId, 1L>的形式
+        JavaPairRDD<Long, Long> orderCategoryIdRDD = orderActionRDD.flatMapToPair(
+                new PairFlatMapFunction<Tuple2<String,Row>, Long, Long>() {
+                    @Override
+                    public Iterator<Tuple2<Long, Long>> call(Tuple2<String, Row> tuple) throws Exception {
+                        String orderCategoryIds = tuple._2.getString(8);
+                        String[] orderCategoryIdsSplited = orderCategoryIds.split(",");
+
+                        List<Tuple2<Long, Long>> list = new ArrayList<>();
+
+                        for(String orderCategoryId : orderCategoryIdsSplited) {
+                            list.add(new Tuple2<Long, Long>(Long.valueOf(orderCategoryId), 1L));
+                        }
+
+                        return list.iterator();
+                    }
+                }
+        );
+        //③： 对上一步的结果reduceByKey()即可得到<clickCategory, count>
+        JavaPairRDD<Long, Long> orderCategoryId2CountRDD = orderCategoryIdRDD.reduceByKey(
+                new Function2<Long, Long, Long>() {
+                    @Override
+                    public Long call(Long v1, Long v2) throws Exception {
+                        return v1 + v2;
+                    }
+                }
+        );
+
+        return orderCategoryId2CountRDD;
+    }
+
+    /**
+     * 获取各品类点击次数RDD
+     * @param sessionid2detailRDD
+     * @return
+     */
+    private static JavaPairRDD<Long,Long> getClickCategoryId2CountRDD(JavaPairRDD<String, Row> sessionid2detailRDD) {
+        //①： 过滤获取有点击行为的RDD
+        JavaPairRDD<String, Row> clickActionRDD =sessionid2detailRDD.filter(new Function<Tuple2<String, Row>, Boolean>() {
+            @Override
+            public Boolean call(Tuple2<String, Row> v) throws Exception {
+                Row row = v._2;
+                return (row.getLong(6) != -1L) ? true : false;
+            }
+        });
+
+        //②： 过滤后对出现的clickCategoryId组合成<clickCategoryId, 1L>的形式
+        JavaPairRDD<Long, Long> clickCategoryIdRDD = clickActionRDD.mapToPair(
+                new PairFunction<Tuple2<String,Row>, Long, Long>() {
+                    @Override
+                    public Tuple2<Long, Long> call(Tuple2<String, Row> tuple) throws Exception {
+                        Long clickCategoryId = tuple._2.getLong(6);
+                        return new Tuple2<Long, Long>(clickCategoryId, 1L);
+                    }
+                }
+        );
+
+        //③： 对上一步的结果reduceByKey()即可得到<clickCategory, count>
+        JavaPairRDD<Long, Long> clickCategoryId2CountRDD = clickCategoryIdRDD.reduceByKey(
+                new Function2<Long, Long, Long>() {
+                    @Override
+                    public Long call(Long v1, Long v2) throws Exception {
+                        return v1 + v2;
+                    }
+                }
+        );
+
+        return clickCategoryId2CountRDD;
     }
 
     /**
