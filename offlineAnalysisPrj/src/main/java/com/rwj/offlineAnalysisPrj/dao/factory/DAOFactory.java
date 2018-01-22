@@ -1,13 +1,7 @@
 package com.rwj.offlineAnalysisPrj.dao.factory;
 
-import com.rwj.offlineAnalysisPrj.dao.ISessionAggrStatDAO;
-import com.rwj.offlineAnalysisPrj.dao.ISessionDetailDAO;
-import com.rwj.offlineAnalysisPrj.dao.ISessionRandomExtractDAO;
-import com.rwj.offlineAnalysisPrj.dao.ITaskDAO;
-import com.rwj.offlineAnalysisPrj.dao.impl.SessionAggrStatDAOImpl;
-import com.rwj.offlineAnalysisPrj.dao.impl.SessionDetailDAOImpl;
-import com.rwj.offlineAnalysisPrj.dao.impl.SessionRandomExtractDAOImpl;
-import com.rwj.offlineAnalysisPrj.dao.impl.TaskDAOImpl;
+import com.rwj.offlineAnalysisPrj.dao.*;
+import com.rwj.offlineAnalysisPrj.dao.impl.*;
 
 /**
  * Created by renwujie on 2018/01/12 at 11:46
@@ -28,5 +22,9 @@ public class DAOFactory {
 
     public static ISessionDetailDAO getSessionDetailDAO(){
         return new SessionDetailDAOImpl();
+    }
+
+    public static ITop10CategoryDAO getTop10CategoryDAO() {
+        return new Top10CategoryDAOImpl();
     }
 }

@@ -2,15 +2,9 @@ package com.rwj.offlineAnalysisPrj.spark.session;
 
 import com.alibaba.fastjson.JSONObject;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
-import com.rwj.offlineAnalysisPrj.dao.ISessionAggrStatDAO;
-import com.rwj.offlineAnalysisPrj.dao.ISessionDetailDAO;
-import com.rwj.offlineAnalysisPrj.dao.ISessionRandomExtractDAO;
-import com.rwj.offlineAnalysisPrj.dao.ITaskDAO;
+import com.rwj.offlineAnalysisPrj.dao.*;
 import com.rwj.offlineAnalysisPrj.dao.factory.DAOFactory;
-import com.rwj.offlineAnalysisPrj.domain.SessionAggrStat;
-import com.rwj.offlineAnalysisPrj.domain.SessionDetail;
-import com.rwj.offlineAnalysisPrj.domain.SessionRandomExtract;
-import com.rwj.offlineAnalysisPrj.domain.Task;
+import com.rwj.offlineAnalysisPrj.domain.*;
 import com.rwj.offlineAnalysisPrj.mockdata.MockData;
 import com.rwj.offlineAnalysisPrj.spark.session.accumulator.SessionAggrStatAccumulator;
 import com.rwj.offlineAnalysisPrj.util.*;
@@ -116,7 +110,9 @@ public class UserVisitSessionAnalyzeSpark {
         randomExtractSession(task.getTaskid(), filteredSessionid2AggrInfoRDD, sessionid2actionRDD);
 
         //计算出各个范围的session占比，并写入MySQL
-        calculateAndPersistAggrStat(sessionAggrStatAccumulator.value(), taskId);
+        calculateAndPersistAggrStat(sessionAggrStatAccumulator.value(), task.getTaskid());
+
+        getTop10Category(task.getTaskid(), filteredSessionid2AggrInfoRDD, sessionid2actionRDD);
 
         ss.close();
     }
@@ -138,7 +134,7 @@ public class UserVisitSessionAnalyzeSpark {
                 new PairFunction<Tuple2<Long,Tuple2<Long,Optional<Long>>>, Long, String>() {
                     @Override
                     public Tuple2<Long, String> call(Tuple2<Long, Tuple2<Long, Optional<Long>>> tuple) throws Exception {
-                        Long categoryid = tuple._1;
+                        Long categoryId = tuple._1;
                         Optional<Long> optional = tuple._2._2;
                         long clickCount = 0L;
 
@@ -146,8 +142,8 @@ public class UserVisitSessionAnalyzeSpark {
                             clickCount = optional.get();
                         }
 
-                        String value = Constants.FIELD_CATEGORY_ID + "=" + categoryid + "\\|" + Constants.FIELD_CLICK_COUNT + "=" + clickCount;
-                        return new Tuple2<Long, String>(categoryid, value);
+                        String value = Constants.FIELD_CATEGORY_ID + "=" + categoryId + "\\|" + Constants.FIELD_CLICK_COUNT + "=" + clickCount;
+                        return new Tuple2<Long, String>(categoryId, value);
                     }
                 }
         );
@@ -164,7 +160,7 @@ public class UserVisitSessionAnalyzeSpark {
                             orderCount = optional.get();
                         }
 
-                        String value = tuple._2._1 + "\\|" + Constants.FIELD_ORDER_COUNT + orderCount;
+                        String value = tuple._2._1 + "\\|" + Constants.FIELD_ORDER_COUNT + "=" + orderCount;
 
                         return new Tuple2<Long, String>(categoryId, value);
                     }
@@ -177,7 +173,7 @@ public class UserVisitSessionAnalyzeSpark {
                     public Tuple2<Long, String> call(Tuple2<Long, Tuple2<String, Optional<Long>>> tuple) throws Exception {
                         Long categoryId = tuple._1;
                         Optional<Long> optional = tuple._2._2;
-                        long payCount = 0;
+                        long payCount = 0L;
 
                         if(optional.isPresent()) {
                             payCount = optional.get();
@@ -199,7 +195,7 @@ public class UserVisitSessionAnalyzeSpark {
      * @param filteredSessionid2AggrInfoRDD
      * @param sessionid2actionRDD
      */
-    private static void getTop10Category(JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD, JavaPairRDD<String, Row> sessionid2actionRDD) {
+    private static void getTop10Category(long taskId, JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD, JavaPairRDD<String, Row> sessionid2actionRDD) {
         //第一步：取得符合条件的session访问过的所有品类
         JavaPairRDD<String, Row> sessionid2detailRDD = filteredSessionid2AggrInfoRDD.join(sessionid2actionRDD).mapToPair(
                 new PairFunction<Tuple2<String, Tuple2<String, Row>>, String, Row>() {
@@ -283,7 +279,51 @@ public class UserVisitSessionAnalyzeSpark {
          * 第四步：自定义二次排序key
          */
 
+        /**
+         * 第五步：将数据映射成自定义的排序key(CategorySortKey)，并进行排序
+         */
+        JavaPairRDD<CategorySortKey, String> sortKey2countRDD = categoryid2countRDD.mapToPair(
+                new PairFunction<Tuple2<Long,String>, CategorySortKey, String>() {
+                    @Override
+                    public Tuple2<CategorySortKey, String> call(Tuple2<Long, String> tuple) throws Exception {
+                        String countInfo = tuple._2;
 
+                        long clickCount = Long.valueOf(StringUtils.getFieldFromConcatString(countInfo, "\\|", Constants.FIELD_CLICK_COUNT));
+                        long orderCount = Long.valueOf(StringUtils.getFieldFromConcatString(countInfo, "\\|", Constants.FIELD_ORDER_COUNT));
+                        long payCount = Long.valueOf(StringUtils.getFieldFromConcatString(countInfo, "\\|", Constants.FIELD_PAY_COUNT));
+
+                        CategorySortKey sortKey = new CategorySortKey(clickCount, orderCount, payCount);
+
+                        return new Tuple2<CategorySortKey, String>(sortKey, countInfo);
+                    }
+                }
+        );
+
+        //排序——降序
+        JavaPairRDD<CategorySortKey, String> sortedCategoryCountRDD = sortKey2countRDD.sortByKey(false);
+
+        /**
+         * 第六步：用take(10)取出top10热门品类，并写入MySQL
+         */
+        ITop10CategoryDAO top10CategoryDAO = DAOFactory.getTop10CategoryDAO();
+
+        List<Tuple2<CategorySortKey, String>> top10CategoryList = sortedCategoryCountRDD.take(10);
+        for(Tuple2<CategorySortKey, String> tuple : top10CategoryList) {
+            String aggrInfo = tuple._2;
+            long categoryId = Long.valueOf(StringUtils.getFieldFromConcatString(aggrInfo, "\\|", Constants.FIELD_CATEGORY_ID));
+            long clickCount = Long.valueOf(StringUtils.getFieldFromConcatString(aggrInfo, "\\|", Constants.FIELD_CLICK_COUNT));
+            long orderCount = Long.valueOf(StringUtils.getFieldFromConcatString(aggrInfo, "\\|", Constants.FIELD_ORDER_COUNT));
+            long payCount = Long.valueOf(StringUtils.getFieldFromConcatString(aggrInfo, "\\|", Constants.FIELD_PAY_COUNT));
+
+            Top10Category top10Category = new Top10Category();
+            top10Category.setTaskId(taskId);
+            top10Category.setCategoryId(categoryId);
+            top10Category.setClickCount(clickCount);
+            top10Category.setOrderCount(orderCount);
+            top10Category.setPayCount(payCount);
+
+            top10CategoryDAO.insert(top10Category);
+        }
     }
 
     /**
