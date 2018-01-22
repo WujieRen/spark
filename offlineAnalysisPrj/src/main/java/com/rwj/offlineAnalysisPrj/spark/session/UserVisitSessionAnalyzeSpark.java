@@ -1,4 +1,4 @@
-package com.rwj.offlineAnalysisPrj.spark;
+package com.rwj.offlineAnalysisPrj.spark.session;
 
 import com.alibaba.fastjson.JSONObject;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
@@ -12,7 +12,7 @@ import com.rwj.offlineAnalysisPrj.domain.SessionDetail;
 import com.rwj.offlineAnalysisPrj.domain.SessionRandomExtract;
 import com.rwj.offlineAnalysisPrj.domain.Task;
 import com.rwj.offlineAnalysisPrj.mockdata.MockData;
-import com.rwj.offlineAnalysisPrj.spark.accumulator.SessionAggrStatAccumulator;
+import com.rwj.offlineAnalysisPrj.spark.session.accumulator.SessionAggrStatAccumulator;
 import com.rwj.offlineAnalysisPrj.util.*;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -278,6 +278,10 @@ public class UserVisitSessionAnalyzeSpark {
         JavaPairRDD<Long, String> categoryid2countRDD = joinCategoryAndData(
                 categoryidRDD, clickCategoryId2CountRDD, orderCategoryId2CountRDD,
                 payCategoryId2CountRDD);
+
+        /**
+         * 第四步：自定义二次排序key
+         */
 
 
     }

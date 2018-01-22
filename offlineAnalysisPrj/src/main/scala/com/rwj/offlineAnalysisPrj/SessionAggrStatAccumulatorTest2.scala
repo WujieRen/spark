@@ -1,7 +1,7 @@
 package com.rwj.offlineAnalysisPrj
 
 import com.rwj.offlineAnalysisPrj.constant.Constants
-import com.rwj.offlineAnalysisPrj.spark.accumulator.SessionAggrStatAccumulator
+import com.rwj.offlineAnalysisPrj.spark.session.accumulator.SessionAggrStatAccumulator
 import com.rwj.offlineAnalysisPrj.util.StringUtils
 import org.apache.spark.util.AccumulatorV2
 import org.apache.spark.{SparkConf, SparkContext}

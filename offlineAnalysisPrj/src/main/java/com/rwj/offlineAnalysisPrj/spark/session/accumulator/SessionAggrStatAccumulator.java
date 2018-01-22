@@ -1,4 +1,4 @@
-package com.rwj.offlineAnalysisPrj.spark.accumulator;
+package com.rwj.offlineAnalysisPrj.spark.session.accumulator;
 
 import com.rwj.offlineAnalysisPrj.constant.Constants;
 import com.rwj.offlineAnalysisPrj.util.StringUtils;

@@ -10,7 +10,7 @@ import com.rwj.offlineAnalysisPrj.domain.SessionAggrStat;
 import com.rwj.offlineAnalysisPrj.domain.SessionRandomExtract;
 import com.rwj.offlineAnalysisPrj.domain.Task;
 import com.rwj.offlineAnalysisPrj.mockdata.MockData;
-import com.rwj.offlineAnalysisPrj.spark.accumulator.SessionAggrStatAccumulator;
+import com.rwj.offlineAnalysisPrj.spark.session.accumulator.SessionAggrStatAccumulator;
 import com.rwj.offlineAnalysisPrj.util.*;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
