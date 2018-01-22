@@ -18,6 +18,7 @@ import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.Optional;
 import org.apache.spark.api.java.function.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -121,6 +122,78 @@ public class UserVisitSessionAnalyzeSpark {
     }
 
     /**
+     * 连接品类RDD与数据RDD
+     * @param categoryidRDD
+     * @param clickCategoryId2CountRDD
+     * @param orderCategoryId2CountRDD
+     * @param payCategoryId2CountRDD
+     * @return
+     */
+    private static JavaPairRDD<Long,String> joinCategoryAndData(JavaPairRDD<Long, Long> categoryidRDD, JavaPairRDD<Long, Long> clickCategoryId2CountRDD, JavaPairRDD<Long, Long> orderCategoryId2CountRDD, JavaPairRDD<Long, Long> payCategoryId2CountRDD) {
+        //如果用leftOuterJoin，就可能出现，右边那个RDD中join过来时没有值的情况。
+        //所以Tuple的第二个元素用OPtional<Long>类型，代表可能有值，可能没有值
+        JavaPairRDD<Long, Tuple2<Long, Optional<Long>>> tmpJoinRDD = categoryidRDD.leftOuterJoin(clickCategoryId2CountRDD);
+
+        JavaPairRDD<Long, String> tmpMapRDD = tmpJoinRDD.mapToPair(
+                new PairFunction<Tuple2<Long,Tuple2<Long,Optional<Long>>>, Long, String>() {
+                    @Override
+                    public Tuple2<Long, String> call(Tuple2<Long, Tuple2<Long, Optional<Long>>> tuple) throws Exception {
+                        Long categoryid = tuple._1;
+                        Optional<Long> optional = tuple._2._2;
+                        long clickCount = 0L;
+
+                        if(optional.isPresent()) {
+                            clickCount = optional.get();
+                        }
+
+                        String value = Constants.FIELD_CATEGORY_ID + "=" + categoryid + "\\|" + Constants.FIELD_CLICK_COUNT + "=" + clickCount;
+                        return new Tuple2<Long, String>(categoryid, value);
+                    }
+                }
+        );
+
+        tmpMapRDD = tmpMapRDD.leftOuterJoin(orderCategoryId2CountRDD).mapToPair(
+                new PairFunction<Tuple2<Long, Tuple2<String, Optional<Long>>>, Long, String>() {
+                    @Override
+                    public Tuple2<Long, String> call(Tuple2<Long, Tuple2<String, Optional<Long>>> tuple) throws Exception {
+                        Long categoryId = tuple._1;
+                        Optional<Long> optional = tuple._2._2;
+                        long orderCount = 0L;
+
+                        if(optional.isPresent()) {
+                            orderCount = optional.get();
+                        }
+
+                        String value = tuple._2._1 + "\\|" + Constants.FIELD_ORDER_COUNT + orderCount;
+
+                        return new Tuple2<Long, String>(categoryId, value);
+                    }
+                }
+        );
+
+        tmpMapRDD = tmpMapRDD.leftOuterJoin(payCategoryId2CountRDD).mapToPair(
+                new PairFunction<Tuple2<Long, Tuple2<String, Optional<Long>>>, Long, String>() {
+                    @Override
+                    public Tuple2<Long, String> call(Tuple2<Long, Tuple2<String, Optional<Long>>> tuple) throws Exception {
+                        Long categoryId = tuple._1;
+                        Optional<Long> optional = tuple._2._2;
+                        long payCount = 0;
+
+                        if(optional.isPresent()) {
+                            payCount = optional.get();
+                        }
+
+                        String value = tuple._2._1 + "\\|" + Constants.FIELD_PAY_COUNT + "=" + payCount;
+
+                        return new Tuple2<Long, String>(categoryId, value);
+                    }
+                }
+        );
+
+        return tmpMapRDD;
+    }
+
+    /**
      * 获取top10热门品类
      *  参数中的条件满足的session才算，如某个品类，搜索的某个词等
      * @param filteredSessionid2AggrInfoRDD
@@ -162,7 +235,7 @@ public class UserVisitSessionAnalyzeSpark {
                             }
                         }
                         //支付
-                        String payCategoryIds = row.getString(10);
+                        String payCategoryIds =  row.getString(10);
                         if(payCategoryIds != null) {
                             String[] payCategoryIdsSplited = payCategoryIds.split(",");
                             for(String payCategoryId : payCategoryIdsSplited) {
@@ -193,6 +266,19 @@ public class UserVisitSessionAnalyzeSpark {
         // 计算各个品类的支付次数
         JavaPairRDD<Long, Long> payCategoryId2CountRDD =
                 getPayCategoryId2CountRDD(sessionid2detailRDD);
+
+        /**
+         * 第三步：join各品类与它的点击、下单和支付的次数
+         *
+         * categoryIdRDD中，各品类点击、下单和支付的次数，可能不是包含所有品类的。
+         *  如：有的品类，就只是被点击过，但是没有人下单和支付。
+         *
+         * 所以这里，就不能使用join操作，要使用leftOuterJoin操作，就是说，如果categoryRDD不能join到自己的某个数据，比如点击、或下单、或支付次数，那么该categoryRDD还是要保留下来，只不过没有join到那个数据就是0了。
+         */
+        JavaPairRDD<Long, String> categoryid2countRDD = joinCategoryAndData(
+                categoryidRDD, clickCategoryId2CountRDD, orderCategoryId2CountRDD,
+                payCategoryId2CountRDD);
+
 
     }
 
