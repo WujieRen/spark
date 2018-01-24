@@ -17,6 +17,7 @@ public class TestList {
         list.add(1);
         list.add(2);
         list.add(3);
+        list.add(1);
         System.out.println(list.toString());
 
         /**
@@ -45,5 +46,6 @@ public class TestList {
             it.next();
             index++;
         }
+
     }
 }

@@ -142,7 +142,7 @@ public class UserVisitSessionAnalyzeSpark {
                             clickCount = optional.get();
                         }
 
-                        String value = Constants.FIELD_CATEGORY_ID + "=" + categoryId + "\\|" + Constants.FIELD_CLICK_COUNT + "=" + clickCount;
+                        String value = Constants.FIELD_CATEGORY_ID + "=" + categoryId + "|" + Constants.FIELD_CLICK_COUNT + "=" + clickCount;
                         return new Tuple2<Long, String>(categoryId, value);
                     }
                 }
@@ -160,7 +160,7 @@ public class UserVisitSessionAnalyzeSpark {
                             orderCount = optional.get();
                         }
 
-                        String value = tuple._2._1 + "\\|" + Constants.FIELD_ORDER_COUNT + "=" + orderCount;
+                        String value = tuple._2._1 + "|" + Constants.FIELD_ORDER_COUNT + "=" + orderCount;
 
                         return new Tuple2<Long, String>(categoryId, value);
                     }
@@ -179,7 +179,7 @@ public class UserVisitSessionAnalyzeSpark {
                             payCount = optional.get();
                         }
 
-                        String value = tuple._2._1 + "\\|" + Constants.FIELD_PAY_COUNT + "=" + payCount;
+                        String value = tuple._2._1 + "|" + Constants.FIELD_PAY_COUNT + "=" + payCount;
 
                         return new Tuple2<Long, String>(categoryId, value);
                     }
@@ -196,7 +196,9 @@ public class UserVisitSessionAnalyzeSpark {
      * @param sessionid2actionRDD
      */
     private static void getTop10Category(long taskId, JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD, JavaPairRDD<String, Row> sessionid2actionRDD) {
-        //第一步：取得符合条件的session访问过的所有品类
+        /**
+         * 第一步：取得符合条件的session访问过的所有品类
+         */
         JavaPairRDD<String, Row> sessionid2detailRDD = filteredSessionid2AggrInfoRDD.join(sessionid2actionRDD).mapToPair(
                 new PairFunction<Tuple2<String, Tuple2<String, Row>>, String, Row>() {
                     @Override
@@ -208,7 +210,7 @@ public class UserVisitSessionAnalyzeSpark {
                 }
         );
 
-        // 访问过：指的是，点击过、下单过、支付过的品类
+        // 访问过：指的是，点击过 或 下单过 或 支付过的品类
         JavaPairRDD<Long, Long> categoryidRDD = sessionid2detailRDD.flatMapToPair(
                 new PairFlatMapFunction<Tuple2<String,Row>, Long, Long>() {
                     @Override
@@ -239,11 +241,19 @@ public class UserVisitSessionAnalyzeSpark {
                             }
 
                         }
-
+                        //最终list存放的其实是点击过 或 下单过 或 支付过 的产品的categoryId。且很可能有重复的。
                         return list.iterator();
                     }
                 }
         );
+
+        /**
+         * 必须要进行去重
+         * 如果不去重的话，会出现重复的categoryid，排序会对重复的categoryid已经countInfo进行排序
+         * 最后很可能会拿到重复的数据
+         */
+        //TODO:能不能用Set啥的？为啥非要用list???
+        categoryidRDD = categoryidRDD.distinct();
 
         /**
          * 第二步：计算各品类的点击、下单和支付的次数
@@ -308,6 +318,8 @@ public class UserVisitSessionAnalyzeSpark {
         ITop10CategoryDAO top10CategoryDAO = DAOFactory.getTop10CategoryDAO();
 
         List<Tuple2<CategorySortKey, String>> top10CategoryList = sortedCategoryCountRDD.take(10);
+        //List<Tuple2<CategorySortKey, String>> top10CategoryList = sortedCategoryCountRDD.collect();
+
         for(Tuple2<CategorySortKey, String> tuple : top10CategoryList) {
             String aggrInfo = tuple._2;
             long categoryId = Long.valueOf(StringUtils.getFieldFromConcatString(aggrInfo, "\\|", Constants.FIELD_CATEGORY_ID));
@@ -347,7 +359,7 @@ public class UserVisitSessionAnalyzeSpark {
                 new PairFlatMapFunction<Tuple2<String,Row>, Long, Long>() {
                     @Override
                     public Iterator<Tuple2<Long, Long>> call(Tuple2<String, Row> tuple) throws Exception {
-                        String payCategoryIds = tuple._2.getString(11);
+                        String payCategoryIds = tuple._2.getString(10);
                         String[] payCategoryIdsSplited = payCategoryIds.split(",");
 
                         List<Tuple2<Long, Long>> list = new ArrayList<>();
@@ -425,10 +437,11 @@ public class UserVisitSessionAnalyzeSpark {
      */
     private static JavaPairRDD<Long,Long> getClickCategoryId2CountRDD(JavaPairRDD<String, Row> sessionid2detailRDD) {
         //①： 过滤获取有点击行为的RDD
-        JavaPairRDD<String, Row> clickActionRDD =sessionid2detailRDD.filter(new Function<Tuple2<String, Row>, Boolean>() {
+        JavaPairRDD<String, Row> clickActionRDD = sessionid2detailRDD.filter(new Function<Tuple2<String, Row>, Boolean>() {
             @Override
             public Boolean call(Tuple2<String, Row> v) throws Exception {
                 Row row = v._2;
+
                 return (row.getLong(6) != -1L) ? true : false;
             }
         });
@@ -831,7 +844,7 @@ public class UserVisitSessionAnalyzeSpark {
                                 }
                             }
 
-                            if (clickCategoryId != null && clickCategoryId != -1L) {
+                            if (clickCategoryId != -1L) {
                                 if (!clickCategoryIdsBuffer.toString().contains(String.valueOf(clickCategoryId))) {
                                     clickCategoryIdsBuffer.append(clickCategoryId + ",");
                                 }
@@ -950,7 +963,7 @@ public class UserVisitSessionAnalyzeSpark {
         //从Accumulator统计结果中获取响应字段的值
         long session_count = Long.valueOf(StringUtils.getFieldFromConcatString(value, "\\|", Constants.SESSION_COUNT));
 
-        System.out.println(session_count);
+        //System.out.println(session_count);
 
         long visit_length_1s_3s = Long.valueOf(StringUtils.getFieldFromConcatString(
                 value, "\\|", Constants.TIME_PERIOD_1s_3s));
@@ -1049,7 +1062,7 @@ public class UserVisitSessionAnalyzeSpark {
      * @param actionRDD
      * @return
      */
-    public static JavaPairRDD<String, Row> getSessionid2ActionRDD(JavaRDD<Row> actionRDD) {
+    private static JavaPairRDD<String, Row> getSessionid2ActionRDD(JavaRDD<Row> actionRDD) {
         return actionRDD.mapToPair(new PairFunction<Row, String, Row>() {
 
             private static final long serialVersionUID = 1L;

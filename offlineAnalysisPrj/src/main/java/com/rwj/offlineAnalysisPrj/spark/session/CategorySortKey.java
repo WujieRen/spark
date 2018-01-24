@@ -2,6 +2,8 @@ package com.rwj.offlineAnalysisPrj.spark.session;
 
 import scala.math.Ordered;
 
+import java.io.Serializable;
+
 /**
  * Created by renwujie on 2018/01/22 at 23:02
  *
@@ -13,7 +15,7 @@ import scala.math.Ordered;
  *  依此使用三个参数进行比较，如果一个相等，那就比较下一个。
  *
  */
-public class CategorySortKey implements Ordered<CategorySortKey> {
+public class CategorySortKey implements Ordered<CategorySortKey>,Serializable {
 
     private long clickCount;
     private long orderCount;
@@ -111,19 +113,19 @@ public class CategorySortKey implements Ordered<CategorySortKey> {
 
     @Override
     public int compareTo(CategorySortKey that) {
-        /*if(clickCount - that.getClickCount() != 0) {
+        if(clickCount - that.getClickCount() != 0) {
             return (int)(clickCount - that.getClickCount());
         } else if (orderCount - that.getOrderCount() != 0) {
             return (int)(orderCount - that.getOrderCount());
         } else if (payCount - that.getPayCount() != 0) {
             return (int)(payCount - that.getPayCount());
         }
-        return 0;*/
-        if(this.$greater(that)) {
+        return 0;
+        /*if(this.$greater(that)) {
             return 1;
         } else if(this.$less(that)) {
             return -1;
         }
-        return 0;
+        return 0;*/
     }
 }
