@@ -2,45 +2,21 @@
 <project version="4">
   <component name="BookmarkManager">
     <bookmark url="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java" line="107" />
-    <bookmark url="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java" line="1137" />
+    <bookmark url="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java" line="1163" />
     <bookmark url="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java" line="94" />
     <bookmark url="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/test/spark/UserVisitSessionAnalyzeSpark.java" line="108" />
     <bookmark url="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/test/spark/UserVisitSessionAnalyzeSpark.java" line="96" />
+    <bookmark url="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java" line="856" />
+    <bookmark url="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java" line="289" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c324f503-211b-4e67-b82f-cc9a9bb8e3f5" name="Default" comment="spark offlineAnalysisProject top10活跃session之 计算top10品类被点击次数并写入Mysql &amp; 测试通过。">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/dao/ITop10SessionDAO.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/dao/impl/Top10SessionDAOImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/domain/Top10Session.java" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../sparkBook/.idea/vcs.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_module_jackson_module_scala_2_10_2_6_5.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_twitter_chill_2_10_0_8_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_core_2_10_2_2_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_launcher_2_10_2_2_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_network_common_2_10_2_2_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_network_shuffle_2_10_2_2_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_tags_2_10_2_2_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_unsafe_2_10_2_2_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_json4s_json4s_ast_2_10_3_2_11.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_json4s_json4s_core_2_10_3_2_11.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_json4s_json4s_jackson_2_10_3_2_11.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/rwj/offlineAnalysisPrj/dao/factory/DAOFactory.class" afterPath="$PROJECT_DIR$/target/classes/com/rwj/offlineAnalysisPrj/dao/factory/DAOFactory.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/offlineAnalysisPrj.iml" afterPath="$PROJECT_DIR$/offlineAnalysisPrj.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/dao/factory/DAOFactory.java" afterPath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/dao/factory/DAOFactory.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java" afterPath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/summary" afterPath="$PROJECT_DIR$/summary" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../sparkBook/sparkBook.iml" afterPath="$PROJECT_DIR$/../sparkBook/sparkBook.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../sparkBook/src/main/scala/com/scalabook/Test.scala" afterPath="$PROJECT_DIR$/../sparkBook/src/main/scala/com/scalabook/Test.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_kafka_kafka_2_10_0_8_2_1.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_kafka_kafka_2_11_0_8_2_1.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_catalyst_2_10_2_2_0.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_catalyst_2_11_2_2_0.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_hive_2_10_2_2_0.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_hive_2_11_2_2_0.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_sketch_2_10_2_2_0.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_sketch_2_11_2_2_0.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_sql_2_10_2_2_0.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_sql_2_11_2_2_0.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_streaming_2_10_2_2_0.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_streaming_2_11_2_2_0.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_streaming_kafka_2_10_1_5_1.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_spark_spark_streaming_kafka_2_11_1_5_1.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_scala_lang_modules_scala_parser_combinators_2_11_1_0_1.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_scala_lang_modules_scala_parser_combinators_2_11_1_0_2.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_scala_lang_modules_scala_xml_2_11_1_0_1.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_scala_lang_modules_scala_xml_2_11_1_0_2.xml" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -67,40 +43,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="UserVisitSessionAnalyzeSpark.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="262" column="0" lean-forward="true" selection-start-line="262" selection-start-column="0" selection-end-line="262" selection-end-column="0" />
-              <folding>
-                <element signature="docComment;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-                <element signature="e#5419#5439#0" expanded="true" />
-                <element signature="method#call#0;class#6164:7901" expanded="false" />
-                <element signature="class#8086:8414" expanded="false" />
-                <element signature="e#10513#10537#0" expanded="true" />
-                <element signature="method#getSessionid2detailRDD#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-                <element signature="method#getPayCategoryId2CountRDD#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-                <element signature="method#getOrderCategoryId2CountRDD#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-                <element signature="method#getClickCategoryId2CountRDD#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-                <element signature="method#randomExtractSession#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-                <element signature="e#28386#28408#0" expanded="false" />
-                <element signature="method#filterSessionAndAggrStat#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-                <element signature="class#39550:44899" expanded="false" />
-                <element signature="method#call#0;class#39550:44899" expanded="false" />
-                <element signature="method#aggregateBySession#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-                <element signature="method#getActionRDDByDateRange#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-                <element signature="method#calculateAndPersistAggrStat#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-                <element signature="method#getSessionid2ActionRDD#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="summary" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/summary">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="440">
-              <caret line="187" column="42" lean-forward="false" selection-start-line="187" selection-start-column="42" selection-end-line="187" selection-end-column="42" />
+            <state relative-caret-position="295">
+              <caret line="188" column="0" lean-forward="true" selection-start-line="188" selection-start-column="0" selection-end-line="188" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -118,10 +65,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>session_cou</find>
-      <find>city</find>
-      <find>getSessionid2ActionRDD</find>
-      <find>Syst</find>
       <find>age</find>
       <find>一开始</find>
       <find>while</find>
@@ -148,6 +91,10 @@
       <find>sessionDetail</find>
       <find>sessionid2detailRDD</find>
       <find>sessionid2aggrInfoRDD</find>
+      <find>sessionDe</find>
+      <find>sessionDeta</find>
+      <find>SessionDetai</find>
+      <find>///</find>
     </findStrings>
     <replaceStrings>
       <replace>Constants</replace>
@@ -331,6 +278,57 @@
               <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
+              <item name="spark" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
+              <item name="spark" type="462c0819:PsiDirectoryNode" />
+              <item name="session" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
+              <item name="spark" type="462c0819:PsiDirectoryNode" />
+              <item name="session" type="462c0819:PsiDirectoryNode" />
+              <item name="UserVisitSessionAnalyzeSpark" type="1a9f42e2:ClassTreeNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -346,7 +344,7 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.16065294" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://T:/WorkspaceGithub/spark/offlineAnalysisPrj/pom.xml" />
+    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://T:/WorkspaceGithub/spark/offlineAnalysisPrj/summary" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -651,7 +649,7 @@
       <workItem from="1516806866430" duration="650000" />
       <workItem from="1516807547146" duration="161000" />
       <workItem from="1516807801648" duration="614000" />
-      <workItem from="1516851818964" duration="11813000" />
+      <workItem from="1516851818964" duration="14617000" />
     </task>
     <task id="LOCAL-00001" summary="spark offlineAnalysisProject Utils">
       <created>1515141363737</created>
@@ -884,11 +882,18 @@
       <option name="project" value="LOCAL" />
       <updated>1516808393849</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="spark offlineAnalysisProject top10活跃session之 计算top10品类被各session点击次数并写入Mysql &amp; 测试通过。">
+      <created>1516870380573</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1516870380573</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="270991000" />
+    <option name="totallyTimeSpent" value="273795000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -911,13 +916,13 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32914045" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3288337" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33524027" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33638445" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3286638" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Mongo Explorer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32991362" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26241902" sideWeight="0.49568966" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17764579" sideWeight="0.49568966" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3299411" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19551282" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -958,10 +963,10 @@
       <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33524027" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.43592677" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3286638" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26241902" sideWeight="0.49568966" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26241902" sideWeight="0.49568966" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3299411" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3275862" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -975,7 +980,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="spark offlineAnalysisProject Dao工厂模式 &amp;&amp; TaskDAO测试" />
     <MESSAGE value="spark offlineAnalysisProject Spark入口更新为SparkSessin &amp;&amp; MockData更新(原先用的SQLContext，Spark2.o后改用SparkSession)" />
     <MESSAGE value="spark offlineAnalysisProject 按session粒度聚合数据" />
     <MESSAGE value="spark offlineAnalysisProject create.sql" />
@@ -1000,7 +1004,8 @@
     <MESSAGE value="spark offlineAnalysisProject top10热门品类之 提取点击、下单、支付过的top10品类，并写入mysql测试完成。" />
     <MESSAGE value="spark offlineAnalysisProject top10热门品类之 scala实现自定义二次排序 &amp; 测试完成。" />
     <MESSAGE value="spark offlineAnalysisProject top10活跃session之 计算top10品类被点击次数并写入Mysql。" />
-    <option name="LAST_COMMIT_MESSAGE" value="spark offlineAnalysisProject top10活跃session之 计算top10品类被点击次数并写入Mysql。" />
+    <MESSAGE value="spark offlineAnalysisProject top10活跃session之 计算top10品类被各session点击次数并写入Mysql &amp; 测试通过。" />
+    <option name="LAST_COMMIT_MESSAGE" value="spark offlineAnalysisProject top10活跃session之 计算top10品类被各session点击次数并写入Mysql &amp; 测试通过。" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1012,7 +1017,7 @@
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="112" />
+      <option name="time" value="114" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
@@ -1395,8 +1400,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="262" column="0" lean-forward="true" selection-start-line="262" selection-start-column="0" selection-end-line="262" selection-end-column="0" />
+        <state relative-caret-position="-204">
+          <caret line="288" column="20" lean-forward="true" selection-start-line="288" selection-start-column="20" selection-end-line="288" selection-end-column="20" />
           <folding>
             <element signature="docComment;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
             <element signature="e#5419#5439#0" expanded="true" />
@@ -1408,10 +1413,10 @@
             <element signature="method#getOrderCategoryId2CountRDD#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
             <element signature="method#getClickCategoryId2CountRDD#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
             <element signature="method#randomExtractSession#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-            <element signature="e#28386#28408#0" expanded="false" />
+            <element signature="e#29976#29998#0" expanded="false" />
             <element signature="method#filterSessionAndAggrStat#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
-            <element signature="class#39550:44899" expanded="false" />
-            <element signature="method#call#0;class#39550:44899" expanded="false" />
+            <element signature="class#41198:46547" expanded="false" />
+            <element signature="method#call#0;class#41198:46547" expanded="false" />
             <element signature="method#aggregateBySession#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
             <element signature="method#getActionRDDByDateRange#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
             <element signature="method#calculateAndPersistAggrStat#0;class#UserVisitSessionAnalyzeSpark#0" expanded="false" />
@@ -1422,8 +1427,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/summary">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="187" column="42" lean-forward="false" selection-start-line="187" selection-start-column="42" selection-end-line="187" selection-end-column="42" />
+        <state relative-caret-position="295">
+          <caret line="188" column="0" lean-forward="true" selection-start-line="188" selection-start-column="0" selection-end-line="188" selection-end-column="0" />
           <folding />
         </state>
       </provider>

@@ -186,3 +186,6 @@
 
 2018/1/25
     top10活跃session之计算top10品类被点击次数并写入Mysql。
+
+    tope活跃session之 top10 session 详细信息写入MySQL。
+        top10_category_session中的根据sessiontId一定能够查到session_detail中的，但是反过来则不成立。因为session_detail中包含了过滤时存入的session信息。
