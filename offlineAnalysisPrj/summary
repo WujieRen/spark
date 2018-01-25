@@ -183,3 +183,6 @@
             1. 找到应该要上面版本：如与spark-XXX_yyy对应的版本一般为yyy
             2. 去官网下载响应的版本后，解压配置环境变量。
             3. idea plugins 版本主要是与idea版本相匹配。和scala版本没有必然相关性。
+
+2018/1/25
+    top10活跃session之计算top10品类被点击次数并写入Mysql。
