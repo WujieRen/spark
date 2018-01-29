@@ -19,6 +19,9 @@ object WordCount {
       .map((_,1))
       .reduceByKey(_+_)
 
-    result.foreach(println)
+//    result.foreach(print)
+    result.foreach{v =>
+      print(v + " ")
+    }
   }
 }
