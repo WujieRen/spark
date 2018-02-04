@@ -22,6 +22,8 @@ public class SparkUtils {
     public static SparkSession getSparkSesseion(String appName) {
         boolean local = ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL);
 
+        System.out.println(local);
+
         SparkSession ss = null;
         SparkSession.Builder builder = SparkSession.builder();
         builder

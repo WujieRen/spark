@@ -17,6 +17,7 @@ import org.apache.spark.api.java.function.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.storage.StorageLevel;
 import org.apache.spark.util.AccumulatorV2;
 import scala.Tuple2;
 
@@ -83,7 +84,23 @@ public class UserVisitSessionAnalyzeSpark {
 
         JavaPairRDD<String, Row> sessionid2actionRDD = getSessionid2ActionRDD(actionRDD);
         //后面又用到了
-        sessionid2actionRDD.cache();
+        //sessionid2actionRDD.cache();
+        /**
+         * 持久化，很简单，就是对RDD调用persist()方法，并传入一个持久化级别
+         *
+         * 如果是persist(StorageLevel.MEMORY_ONLY())，纯内存，无序列化，那么就可以用cache()方法来替代
+         * StorageLevel.MEMORY_ONLY_SER()，第二选择
+         * StorageLevel.MEMORY_AND_DISK()，第三选择
+         * StorageLevel.MEMORY_AND_DISK_SER()，第四选择
+         * StorageLevel.DISK_ONLY()，第五选择
+         *
+         * 如果内存充足，要使用双副本高可靠机制
+         * 选择后缀带_2的策略
+         * StorageLevel.MEMORY_ONLY_2()
+         *
+         */
+        sessionid2actionRDD = sessionid2actionRDD.persist(StorageLevel.MEMORY_ONLY());
+
 
         //对数据按照sessionId进行groupBy(聚合)，然后与用户信息进行join就是session粒度的包含session和用户信息的数据了。
         //Tuple2<String, String>(sessionId, fullAggrInfo)
@@ -101,18 +118,18 @@ public class UserVisitSessionAnalyzeSpark {
         //匿名内部类(算子函数)，访问外部对象，要将外部对象用final修饰
         //Tuple2<String, String>(sessionId, fullAggrInfo)
         JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD = filterSessionAndAggrStat(sessionid2AggrInfoRDD, taskParam, sessionAggrStatAccumulator);
-        filteredSessionid2AggrInfoRDD.cache();
+        filteredSessionid2AggrInfoRDD = filteredSessionid2AggrInfoRDD.persist(StorageLevel.MEMORY_ONLY());
         //System.out.println(filteredSessionid2AggrInfoRDD.cache().count() + "---" + filteredSessionid2AggrInfoRDD.first().toString());
 
         //生成公共的RDD：通过筛选条件的session的访问明细数据
         JavaPairRDD<String, Row> sessionid2detailRDD = getSessionid2detailRDD( sessionid2actionRDD, filteredSessionid2AggrInfoRDD);
 
-        randomExtractSession(task.getTaskid(), filteredSessionid2AggrInfoRDD, sessionid2actionRDD);
+        randomExtractSession(task.getTaskid(), filteredSessionid2AggrInfoRDD, sessionid2detailRDD);//这里原来写错了，应该是用的sessionid2detailRDD，原来写成了sessionid2actionRDD
 
         //计算出各个范围的session占比，并写入MySQL
         calculateAndPersistAggrStat(sessionAggrStatAccumulator.value(), task.getTaskid());
 
-        List<Tuple2<CategorySortKey, String>> top10CategoryList = getTop10Category(task.getTaskid(), filteredSessionid2AggrInfoRDD, sessionid2actionRDD);
+        List<Tuple2<CategorySortKey, String>> top10CategoryList = getTop10Category(task.getTaskid(), filteredSessionid2AggrInfoRDD, sessionid2detailRDD);//这儿也搞错了，原来也写成了sessioinid2actionRDD
 
         //生成公共的RDD：通过筛选条件的session的访问明细数据
         //TODO:因为没有涉及到action，所以要把这个放在action动作之前。否则不会生成需要的结果

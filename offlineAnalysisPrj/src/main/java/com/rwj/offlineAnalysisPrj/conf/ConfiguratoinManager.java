@@ -52,8 +52,9 @@ public class ConfiguratoinManager {
      */
     public static Boolean getBooleanValue(String key) {
         String value = getProperty(key);
+        System.out.println(value);
         try {
-            Boolean.valueOf(key);
+            return Boolean.valueOf(value);
         } catch (Exception e) {
             e.printStackTrace();
         }
