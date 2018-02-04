@@ -232,6 +232,27 @@
                         b. 对于shuffle操作，reduce端需要内存来存放拉取的数据并进行聚合。这里内存少的话也会导致频繁写入磁盘。
                     Ⅱ 减少GC频率。task越多，可能创建的对象也就越多，如果内存较小，可能频繁导致JVM的堆内存占满，导致频繁GC，minor GC和full GC(速度很慢)。
 
+2018/2/5
+    1. Spark的并行度指的是什么？
+        一个Spark作业，就是一个Application，每个Application有多个Jobs(一个action操作触发一个Job)。每个Job会被拆成多个Stage(发生shuffle时会拆分一个stage。如：reduceByKey)。
+
+        并行度：其实指的就是Spark作业中，各个Stage的task数量，即Spark作业在各个阶段(stage)的并行度。
+
+    2. 如果不调节并行度导致并行度过低会怎样？
+        假设，在一个spark-submit脚本里已经分配了足够的资源(达到了资源上限)，但是现在的task数量设置的很少，并行度没有与资源相匹配，会导致每个executor的资源没有得到充分利用，造成资源浪费。
+
+        合理的并行度设置要足够大，达到可以完全合理的利用资源。这样既可以让每个task处理的数据量变少，又能让同时并行执行的task数量增多。即，合理设置并行度能够能够充分利用资源，减少每个task要处理的数据量，提升整个spark作业的性能。
+
+        理想情况下，task数量，至少设置成与spark application的总cpu core数量相同。(官方推荐，task数量设置成spark application的总cpu core的两到三倍。因为不同task运行速度不一样，这样当一个task运行完后，另一个task补上来，尽量让cpu core不要空闲。尽量提升了spark作业的运行效率和速度)
+
+    3.如何设置？
+        参数： spark.default.parallelism
+
+        如：
+            SparkConf conf = new SparkConf()
+                .set("spark.default.parallelism", "500")
+
+
 
 
 
