@@ -1,7 +1,10 @@
 package com.rwj.offlineAnalysisPrj.util;
 
+import com.rwj.offlineAnalysisPrj.conf.ConfiguratoinManager;
+import com.rwj.offlineAnalysisPrj.constant.Constants;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.SparkSession;
 
 /**
  * Created by renwujie on 2018/01/05 at 16:28
@@ -11,18 +14,39 @@ import org.apache.spark.sql.SQLContext;
 public class SparkUtils {
 
     /**
-     * 根据当前是否本地测试的配置
-     * 决定，如何设置SparkConf的master
+     * 根据当前是否本地测试的配置，
+     *
+     *  决定如何设置SparkConf的master
+     *  决定是否支持HiveContext
      */
+    public static SparkSession getSparkSesseion(String appName) {
+        boolean local = ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL);
 
+        SparkSession ss = null;
+        SparkSession.Builder builder = SparkSession.builder();
+        builder
+                //.config("spark.default.parallelism", "100")
+                .config("spark.storage.memoryFraction", "0.5")
+                .config("spark.shuffle.consolidateFiles", "true")
+                .config("spark.shuffle.file.buffer", "64")
+                .config("spark.shuffle.memoryFraction", "0.3")
+                .config("spark.reducer.maxSizeInFlight", "24")
+                .config("spark.shuffle.io.maxRetries", "60")
+                .config("spark.shuffle.io.retryWait", "60");
 
-    /**
-     * 获取SQLContext
-     * 如果spark.local设置为true，那么就创建SQLContext；否则，创建HiveContext
-     * @param sc
-     * @return
-     */
+        if(local) {
 
+            ss = builder.master("local")
+                    .appName(appName)
+                    .getOrCreate();
+        } else {
+            ss = builder.appName(appName)
+                    .enableHiveSupport()
+                    .getOrCreate();
+        }
+
+        return ss;
+    }
 
     /**
      * 生成模拟数据
@@ -31,7 +55,7 @@ public class SparkUtils {
      * @param sqlContext
      */
     public static void mockData(JavaSparkContext sc, SQLContext sqlContext) {
-            //TestMockData.mock(sc, sqlContext);
+
     }
 
 

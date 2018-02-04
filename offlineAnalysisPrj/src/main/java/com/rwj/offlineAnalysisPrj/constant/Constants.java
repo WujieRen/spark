@@ -16,7 +16,7 @@ public interface Constants {
     String JDBC_PASSWORD = "jdbc.password";
     String JDBC_DATASOURCE_SIZE = "jdbc.datasource.size";
     //Spark入口更新为SparkSession后不再需要
-    //String SPARK_LOCAL = "spark.local";
+    String SPARK_LOCAL = "spark.local";
 
     /**
      * 任务相关的常量
@@ -34,6 +34,8 @@ public interface Constants {
     /**
      *Spark作业常量
      */
+    String SPARK_APP_NAME_SESSION = "UserVisitSessionAnalyzeSpark";
+    String SPARK_APP_NAME_PAGE = "PageOneStepConvertRateSpark";
     String FIELD_SESSION_ID = "sessionid";
     String FIELD_SEARCH_KEYWORDS = "searchKeywords";
     String FIELD_CLICK_CATEGORY_IDS = "clickCategoryIds";

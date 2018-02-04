@@ -64,11 +64,8 @@ public class UserVisitSessionAnalyzeSpark {
 
         args = new String[]{"1"};
 
-        SparkSession ss = SparkSession.builder()
-                .master("local")
-                .appName("UserVisitSessionAnalyzeSpark")
-                //.enableHiveSupport()
-                .getOrCreate();
+        SparkSession ss = SparkUtils.getSparkSesseion(Constants.SPARK_APP_NAME_SESSION);
+
         SparkContext sc = ss.sparkContext();
         JavaSparkContext jsc = JavaSparkContext.fromSparkContext(sc);
 

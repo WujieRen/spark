@@ -189,3 +189,58 @@
 
     tope活跃session之 top10 session 详细信息写入MySQL。
         top10_category_session中的根据sessiontId一定能够查到session_detail中的，但是反过来则不成立。因为session_detail中包含了过滤时存入的session信息。
+
+2018/2/4
+    分配更多资源是性能调优的王道。增加和分配更多的资源，性能和速度上的提升是显而易见的。一定范围内甚至是成正比的。
+        问题：
+            1.分配哪些资源？
+                ①   executor
+                    ，cpu per executor
+                    ，memory per executor
+                    ，driver memory
+            2.在哪里分配这些资源？
+                ① 生产环境中提交spark作业时，用spark-submit shell 脚本调整对应的参数。
+                    /usr/local/spark/bin/spark-submit \
+                    --class cn.spark.sparktest.core.WordCountCluster \
+                    --num-executors 3 \  配置executor的数量
+                    --driver-memory 100m \  配置driver的内存（影响不大）
+                    --executor-memory 100m \  配置每个executor的内存大小
+                    --executor-cores 3 \  配置每个executor的cpu core数量
+                    /usr/local/SparkTest.jar \
+
+                ② 调到多大算最大呢？
+                    第一种，Spark Standalone。公司集群上搭建的Spark集群，心里应该清楚每台机器能够使用的有多大内存，多少cpu core；设置的时候，就根据这个实际情况去调节每个spark作业的资源分配。比如：
+                        每台机器能够使用的有4G内存，2个cpu，一共20台机器；
+                        要启动20个executor；
+                        平均每个executor就分配4G没存，2个cpu core。
+
+                    第二种，Yarn。概念：资源队列。要明白Spark作业要提交到的资源队列大概有多少资源。
+                        如：
+                            一个有500G内存，100个cpu core；
+                            要启动50个executor；
+                            那平均每个executor就分配10G内存，2个cpu core。
+
+                    原则：能使用过的资源有多大，就尽量调节到最大的大小。(主要是executor数量，executor内存executor的cpu core)
+            3.为什么分配这些资源增加后，性能会提升？
+                ① 增加executor的数量：
+                    executor越多，同时能够并行的task就越多，并行能力就越强。相应的性能也就越好。
+                ② 增加每个executor的cpu core：
+                    每个executor的cpu core越多，能够并行执行的task也就越多，执行的速度也就越快。
+                ③ 增加每个executor的内存：
+                    Ⅰ 减少了磁盘IO。
+                        a. 如果需要对RDD进行cache，更多的内存就可以cache更多的数据，就可以将更少的数据写入甚至不需要写入磁盘。
+                        b. 对于shuffle操作，reduce端需要内存来存放拉取的数据并进行聚合。这里内存少的话也会导致频繁写入磁盘。
+                    Ⅱ 减少GC频率。task越多，可能创建的对象也就越多，如果内存较小，可能频繁导致JVM的堆内存占满，导致频繁GC，minor GC和full GC(速度很慢)。
+
+
+
+
+
+
+
+
+
+
+
+
+
