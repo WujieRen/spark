@@ -2,6 +2,8 @@ package com.rwj.offlineAnalysisPrj.util;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.rwj.offlineAnalysisPrj.conf.ConfiguratoinManager;
+import com.rwj.offlineAnalysisPrj.constant.Constants;
 
 /**
  * Created by renwujie on 2018/01/05 at 15:03
@@ -12,13 +14,19 @@ public class ParamUtils {
      * @param args 命令行参数
      * @return 任务id
      */
-    public static Long getTaskIdFromArgs(String[] args){
-        try {
-            if(args != null && args.length > 0){
-                return Long.valueOf(args[0]);
+    public static Long getTaskIdFromArgs(String[] args, String taskType){
+        boolean local = ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL);
+
+        if(local) {
+            ConfiguratoinManager.getLongValue(taskType);
+        } else {
+            try {
+                if(args != null && args.length > 0){
+                    return Long.valueOf(args[0]);
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
             }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
         }
 
         return null;
@@ -37,7 +45,5 @@ public class ParamUtils {
         
         return null;
     }
-
-
 
 }

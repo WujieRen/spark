@@ -17,6 +17,8 @@ public interface Constants {
     String JDBC_DATASOURCE_SIZE = "jdbc.datasource.size";
     //Spark入口更新为SparkSession后不再需要
     String SPARK_LOCAL = "spark.local";
+    String SPARK_LOCAL_TASKID_SESSION = "spark.local.taskid.session";
+    String SPARK_LOCAL_TASKID_PAGE = "spark.local.taskid.page";
 
     /**
      * 任务相关的常量
@@ -30,6 +32,7 @@ public interface Constants {
     String PARAM_SEX = "sex";
     String PARAM_KEYWORDS = "keywords";
     String PARAM_CATEGORY_IDS = "categoryIds";
+    String PARAM_TARGET_PAGE_FLOW = "targetPageFlow";
 
     /**
      *Spark作业常量

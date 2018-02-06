@@ -14,7 +14,6 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.Optional;
 import org.apache.spark.api.java.function.*;
-import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.storage.StorageLevel;
@@ -63,8 +62,6 @@ public class UserVisitSessionAnalyzeSpark {
 
     public static void main(String[] args) {
 
-        args = new String[]{"1"};
-
         SparkSession ss = SparkUtils.getSparkSesseion(Constants.SPARK_APP_NAME_SESSION);
 
         SparkContext sc = ss.sparkContext();
@@ -75,12 +72,12 @@ public class UserVisitSessionAnalyzeSpark {
 
         //查询指定任务并获取响应参数
         ITaskDAO taskDAO = DAOFactory.getTaskDAO();
-        long taskId = ParamUtils.getTaskIdFromArgs(args);
+        long taskId = ParamUtils.getTaskIdFromArgs(args, Constants.SPARK_LOCAL_TASKID_SESSION);
         Task task = taskDAO.findById(taskId);
         JSONObject taskParam = JSONObject.parseObject(task.getTaskParam());
 
         //从user_visit_action表中查询出指定日期的数据
-        JavaRDD<Row> actionRDD = getActionRDDByDateRange(ss, taskParam);
+        JavaRDD<Row> actionRDD = SparkUtils.getActionRDDByDateRange(ss, taskParam);
 
         JavaPairRDD<String, Row> sessionid2actionRDD = getSessionid2ActionRDD(actionRDD);
         //后面又用到了
@@ -1143,26 +1140,6 @@ public class UserVisitSessionAnalyzeSpark {
 
         //函数最终返回结果
         return sessionId2FullInfoRDD;
-    }
-
-    /**
-     * 获取指定日期内的数据
-     *
-     * @param ss
-     * @param taskParam
-     * @return
-     */
-    private static JavaRDD<Row> getActionRDDByDateRange(SparkSession ss, JSONObject taskParam) {
-        String startDate = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_START_DATE);
-        String endDate = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_END_DATE);
-
-        String sql = "select * "
-                + "from user_visit_action "
-                + "where date>='" + startDate + "' "
-                + "and date<='" + endDate + "'";
-
-        Dataset<Row> actionDF = ss.sql(sql);
-        return actionDF.javaRDD();
     }
 
     /**

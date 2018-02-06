@@ -1,8 +1,12 @@
 package com.rwj.offlineAnalysisPrj.util;
 
+import com.alibaba.fastjson.JSONObject;
 import com.rwj.offlineAnalysisPrj.conf.ConfiguratoinManager;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.SparkSession;
 
@@ -37,7 +41,6 @@ public class SparkUtils {
                 .config("spark.shuffle.io.retryWait", "60");
 
         if(local) {
-
             ss = builder.master("local")
                     .appName(appName)
                     .getOrCreate();
@@ -60,5 +63,23 @@ public class SparkUtils {
 
     }
 
+    /**
+     * 获取指定日期内的数据
+     * @param ss
+     * @param taskParam
+     * @return
+     */
+    public static JavaRDD<Row> getActionRDDByDateRange(SparkSession ss, JSONObject taskParam) {
+        String startDate = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_START_DATE);
+        String endDate = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_END_DATE);
+
+        String sql = "select * "
+                + "from user_visit_action "
+                + "where date>='" + startDate + "' "
+                + "and date<='" + endDate + "'";
+
+        Dataset<Row> actionDF = ss.sql(sql);
+        return actionDF.javaRDD();
+    }
 
 }

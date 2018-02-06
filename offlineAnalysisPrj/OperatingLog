@@ -269,12 +269,13 @@
     三、ConfigurationManager中getBooleanValue方法出错。
         错误在两点：
             1. Boolean.ValueOf()转换时参数传成了key
-            2. try中缺少了第一个return导致总是返回false.
+            2. try中缺少了第一个return导致总是返回false。
         体会:
-            写单元测试的重要性.
+            写单元测试的重要性。
 
 
-
+2018/2/6
+    1. 页面切片生成及页面流匹配算法实现。
 
 
 
