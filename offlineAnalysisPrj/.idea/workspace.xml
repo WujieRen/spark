@@ -13,12 +13,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c324f503-211b-4e67-b82f-cc9a9bb8e3f5" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/OperatingLog" afterPath="$PROJECT_DIR$/OperatingLog" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/constant/Constants.java" afterPath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/constant/Constants.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/page/PageOneStepConvertSpark.java" afterPath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/page/PageOneStepConvertSpark.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java" afterPath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/util/ParamUtils.java" afterPath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/util/ParamUtils.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/util/SparkUtils.java" afterPath="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/util/SparkUtils.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -45,11 +40,27 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-      <file leaf-file-name="OperatingLog" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/OperatingLog">
+      <file leaf-file-name="PageOneStepConvertSpark.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/page/PageOneStepConvertSpark.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="504">
-              <caret line="274" column="0" lean-forward="true" selection-start-line="274" selection-start-column="0" selection-end-line="274" selection-end-column="0" />
+            <state relative-caret-position="226">
+              <caret line="65" column="0" lean-forward="true" selection-start-line="65" selection-start-column="0" selection-end-line="65" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#3440#3446#0" expanded="true" />
+                <element signature="method#generateAndMatchPageSplit#0;class#PageOneStepConvertSpark#0" expanded="false" />
+                <element signature="e#4920#4945#0" expanded="true" />
+                <element signature="method#getSessionid2actionRDD#0;class#PageOneStepConvertSpark#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JavaPairRDD.scala" pinned="false" current-in-tab="false">
+        <entry file="jar://D:/m2/repository/org/apache/spark/spark-core_2.11/2.2.0/spark-core_2.11-2.2.0-sources.jar!/org/apache/spark/api/java/JavaPairRDD.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="291">
+              <caret line="310" column="44" lean-forward="false" selection-start-line="310" selection-start-column="40" selection-end-line="310" selection-end-column="44" />
               <folding />
             </state>
           </provider>
@@ -162,8 +173,8 @@
         <option value="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/session/UserVisitSessionAnalyzeSpark.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/util/SparkUtils.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/constant/Constants.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/page/PageOneStepConvertSpark.java" />
         <option value="$PROJECT_DIR$/OperatingLog" />
+        <option value="$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/page/PageOneStepConvertSpark.java" />
       </list>
     </option>
   </component>
@@ -304,44 +315,6 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="constant" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="constant" type="462c0819:PsiDirectoryNode" />
-              <item name="Constants" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="mockdata" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="mockdata" type="462c0819:PsiDirectoryNode" />
-              <item name="MockData" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
               <item name="spark" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -364,66 +337,6 @@
               <item name="spark" type="462c0819:PsiDirectoryNode" />
               <item name="page" type="462c0819:PsiDirectoryNode" />
               <item name="PageOneStepConvertSpark" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="spark" type="462c0819:PsiDirectoryNode" />
-              <item name="session" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="spark" type="462c0819:PsiDirectoryNode" />
-              <item name="session" type="462c0819:PsiDirectoryNode" />
-              <item name="UserVisitSessionAnalyzeSpark" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-              <item name="DateUtils" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-              <item name="ParamUtils" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="offlineAnalysisPrj" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-              <item name="SparkUtils" type="1a9f42e2:ClassTreeNode" />
             </path>
             <path>
               <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
@@ -532,6 +445,41 @@
               <item name="spark" type="462c0819:PsiDirectoryNode" />
               <item name="api" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="Maven: org.apache.spark:spark-core_2.11:2.2.0" type="70bed36:NamedLibraryElementNode" />
+              <item name="spark-core_2.11-2.2.0.jar" type="462c0819:PsiDirectoryNode" />
+              <item name="org" type="462c0819:PsiDirectoryNode" />
+              <item name="spark" type="462c0819:PsiDirectoryNode" />
+              <item name="api" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="JavaPairRDD.class" type="6117b065:FileNode" />
+            </path>
+            <path>
+              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="Maven: org.apache.spark:spark-core_2.11:2.2.0" type="70bed36:NamedLibraryElementNode" />
+              <item name="spark-core_2.11-2.2.0.jar" type="462c0819:PsiDirectoryNode" />
+              <item name="org" type="462c0819:PsiDirectoryNode" />
+              <item name="spark" type="462c0819:PsiDirectoryNode" />
+              <item name="api" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="JavaPairRDD.class" type="6117b065:FileNode" />
+              <item name="JavaPairRDD" type="ce8f04f3:TypeDefinitionNode" />
+            </path>
+            <path>
+              <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="Maven: org.apache.spark:spark-core_2.11:2.2.0" type="70bed36:NamedLibraryElementNode" />
+              <item name="spark-core_2.11-2.2.0.jar" type="462c0819:PsiDirectoryNode" />
+              <item name="org" type="462c0819:PsiDirectoryNode" />
+              <item name="spark" type="462c0819:PsiDirectoryNode" />
+              <item name="api" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="JavaPairRDD.class" type="6117b065:FileNode" />
+              <item name="JavaPairRDD$" type="ce8f04f3:TypeDefinitionNode" />
             </path>
             <path>
               <item name="offlineAnalysisPrj" type="b2602c69:ProjectViewProjectNode" />
@@ -880,7 +828,7 @@
       <workItem from="1517758438861" duration="6835000" />
       <workItem from="1517820234622" duration="209000" />
       <workItem from="1517820516408" duration="5089000" />
-      <workItem from="1517903591114" duration="2823000" />
+      <workItem from="1517903591114" duration="3776000" />
     </task>
     <task id="LOCAL-00001" summary="spark offlineAnalysisProject Utils">
       <created>1515141363737</created>
@@ -1148,11 +1096,18 @@
       <option name="project" value="LOCAL" />
       <updated>1517765234621</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="spark offlineAnalysisProject 页面单跳转化率 : 页面切片生成及页面流匹配算法实现。">
+      <created>1517906448597</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1517906448597</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="296345000" />
+    <option name="totallyTimeSpent" value="297298000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1239,7 +1194,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="spark offlineAnalysisProject session聚合统计：自定义Accumulator" />
     <MESSAGE value="spark offlineAnalysisProject session聚合统计：自定义Accumulator &amp;&amp; 待测试" />
     <MESSAGE value="spark offlineAnalysisProject session聚合统计：重构session聚合，思路 &amp;&amp; 步长和访问时长统计" />
     <MESSAGE value="spark offlineAnalysisProject session聚合统计：重构session过滤 &amp;&amp; 过滤后对session个数，各访问时长、访问步长范围进行计数" />
@@ -1264,7 +1218,8 @@
     <MESSAGE value="spark offlineAnalysisProject 性能调优的王道：分配更多资源。" />
     <MESSAGE value="spark offlineAnalysisProject 性能调优 配合资源提高并行度。" />
     <MESSAGE value="spark offlineAnalysisProject 性能调优 RDD重构 &amp; RDD持久化。Debug &amp; Debug通过。且改正了两个以前的错误。一是RDD用错，二是ConfigurationManager.getBooleanValue方法逻辑错误。" />
-    <option name="LAST_COMMIT_MESSAGE" value="spark offlineAnalysisProject 性能调优 RDD重构 &amp; RDD持久化。Debug &amp; Debug通过。且改正了两个以前的错误。一是RDD用错，二是ConfigurationManager.getBooleanValue方法逻辑错误。" />
+    <MESSAGE value="spark offlineAnalysisProject 页面单跳转化率 : 页面切片生成及页面流匹配算法实现。" />
+    <option name="LAST_COMMIT_MESSAGE" value="spark offlineAnalysisProject 页面单跳转化率 : 页面切片生成及页面流匹配算法实现。" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1286,7 +1241,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/spark-warehouse/tttt/part-00000-b84896e3-4988-44ea-9254-6515ac91816b-c000.snappy.parquet" />
     <entry file="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/test/mock_data_test/TestMockData.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="108">
@@ -1535,6 +1489,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1980">
           <caret line="58" column="32" lean-forward="false" selection-start-line="58" selection-start-column="32" selection-end-line="58" selection-end-column="32" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1641,23 +1596,33 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/page/PageOneStepConvertSpark.java">
+    <entry file="file://$PROJECT_DIR$/OperatingLog">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="120" column="27" lean-forward="false" selection-start-line="120" selection-start-column="27" selection-end-line="120" selection-end-column="27" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3271#3296#0" expanded="true" />
-            <element signature="method#getSessionid2actionRDD#0;class#PageOneStepConvertSpark#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="720">
+          <caret line="280" column="0" lean-forward="true" selection-start-line="280" selection-start-column="0" selection-end-line="280" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/OperatingLog">
+    <entry file="jar://D:/m2/repository/org/apache/spark/spark-core_2.11/2.2.0/spark-core_2.11-2.2.0-sources.jar!/org/apache/spark/api/java/JavaPairRDD.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="274" column="0" lean-forward="true" selection-start-line="274" selection-start-column="0" selection-end-line="274" selection-end-column="0" />
+        <state relative-caret-position="291">
+          <caret line="310" column="44" lean-forward="false" selection-start-line="310" selection-start-column="40" selection-end-line="310" selection-end-column="44" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/page/PageOneStepConvertSpark.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="65" column="0" lean-forward="true" selection-start-line="65" selection-start-column="0" selection-end-line="65" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#3440#3446#0" expanded="true" />
+            <element signature="method#generateAndMatchPageSplit#0;class#PageOneStepConvertSpark#0" expanded="false" />
+            <element signature="e#4920#4945#0" expanded="true" />
+            <element signature="method#getSessionid2actionRDD#0;class#PageOneStepConvertSpark#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

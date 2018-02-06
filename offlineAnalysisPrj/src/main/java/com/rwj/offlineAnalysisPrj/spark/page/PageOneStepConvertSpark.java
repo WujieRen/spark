@@ -12,6 +12,7 @@ import com.rwj.offlineAnalysisPrj.util.SparkUtils;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.PairFlatMapFunction;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.broadcast.Broadcast;
@@ -55,9 +56,48 @@ public class PageOneStepConvertSpark {
         sessionid2actionsRDD = sessionid2actionsRDD.cache();
 
         // 最核心的一步，每个session的单跳页面切片的生成，以及页面流的匹配，算法
+        JavaPairRDD<String, Integer> pageSplitRDD = generateAndMatchPageSplit(jsc, sessionid2actionsRDD, taskParam);
+        Map<String, Long> pageSplitPvMap = pageSplitRDD.countByKey();
 
+        //获取页面流中初始页面的pv
+        long startPagePv = getStartPagePv(taskParam, sessionid2actionsRDD);
 
+    }
 
+    /**
+     * 获取页面流中初始页面的pv
+     * @param taskParam
+     * @param sessionid2actionsRDD
+     * @return
+     */
+    private static long getStartPagePv(JSONObject taskParam,
+                                       JavaPairRDD<String, Iterable<Row>> sessionid2actionsRDD) {
+
+        String targetPageFlow = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_TARGET_PAGE_FLOW);
+        final long startPageId = Long.valueOf(targetPageFlow.split(",")[0]);
+
+        JavaRDD<Long> startPageRDD = sessionid2actionsRDD.flatMap(
+                new FlatMapFunction<Tuple2<String,Iterable<Row>>, Long>() {
+                    @Override
+                    public Iterator<Long> call(Tuple2<String, Iterable<Row>> tuple) throws Exception {
+
+                        Iterator<Row> iterator = tuple._2.iterator();
+
+                        List<Long> list = new ArrayList<Long>();
+
+                        while(iterator.hasNext()) {
+                            long pageId = iterator.next().getLong(3);
+                            if(pageId == startPageId) {
+                                list.add(pageId);
+                            }
+                        }
+
+                        return list.iterator();
+                    }
+                }
+        );
+
+        return startPageRDD.count();
     }
 
     /**
