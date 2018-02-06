@@ -2,11 +2,14 @@ package com.rwj.offlineAnalysisPrj.spark.page;
 
 import com.alibaba.fastjson.JSONObject;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
+import com.rwj.offlineAnalysisPrj.dao.IPageSplitConvertRateDAO;
 import com.rwj.offlineAnalysisPrj.dao.ITaskDAO;
 import com.rwj.offlineAnalysisPrj.dao.factory.DAOFactory;
+import com.rwj.offlineAnalysisPrj.domain.PageSplitConvertRate;
 import com.rwj.offlineAnalysisPrj.domain.Task;
 import com.rwj.offlineAnalysisPrj.mockdata.MockData;
 import com.rwj.offlineAnalysisPrj.util.DateUtils;
+import com.rwj.offlineAnalysisPrj.util.NumberUtils;
 import com.rwj.offlineAnalysisPrj.util.ParamUtils;
 import com.rwj.offlineAnalysisPrj.util.SparkUtils;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -62,6 +65,66 @@ public class PageOneStepConvertSpark {
         //获取页面流中初始页面的pv
         long startPagePv = getStartPagePv(taskParam, sessionid2actionsRDD);
 
+        //计算比例
+        Map<String, Double> convertRateMap = computePageSplitConvertRate(taskParam, pageSplitPvMap, startPagePv);
+
+        persistConvertRate(taskId, convertRateMap);
+    }
+
+    /**
+     * 持久化转化率
+     * @param convertRateMap
+     */
+    private static void persistConvertRate(long taskId, Map<String, Double> convertRateMap) {
+
+        StringBuffer buffer = new StringBuffer("");
+
+        for(Map.Entry<String, Double> entry : convertRateMap.entrySet()) {
+            String pageSplit = entry.getKey();
+            double convertRate = entry.getValue();
+            buffer.append(pageSplit + "=" + convertRate + "|");
+        }
+
+        String converteRate = buffer.toString();
+        converteRate = converteRate.substring(0, converteRate.length() - 1);
+
+        PageSplitConvertRate pageSplitConvertRate = new PageSplitConvertRate();
+        pageSplitConvertRate.setTaskId(taskId);
+        pageSplitConvertRate.setConvertRate(converteRate);
+
+        IPageSplitConvertRateDAO pageSplitConvertRateDAO = DAOFactory.getPageSplitConvertRateDAO();
+        pageSplitConvertRateDAO.insert(pageSplitConvertRate);
+    }
+
+    /**
+     * 计算页面切片转化率
+     * @param pageSplitPvMap 页面切片pv
+     * @param startPagePv 起始页面pv
+     * @return
+     */
+    private static Map<String, Double> computePageSplitConvertRate(JSONObject taskParam, Map<String, Long> pageSplitPvMap, long startPagePv) {
+        String[] targetPages = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_TARGET_PAGE_FLOW).split(",");
+        Map<String, Double> convertRateMap = new HashMap<String, Double>();
+
+        long lastPageSplitPv = 0L;
+
+        for(int i = 1; i < targetPages.length; i++) {
+            String targetPageSplit = targetPages[i-1] + "_" + targetPages[i];
+            long targetPageSplitPv = pageSplitPvMap.get(targetPageSplit);
+
+
+            double converteRate = 0.0;
+            if(i == 1) {
+                converteRate = NumberUtils.formatDouble((double)targetPageSplitPv/(double)startPagePv,2);
+            } else {
+                converteRate = NumberUtils.formatDouble((double)targetPageSplitPv/(double)lastPageSplitPv, 2);
+            }
+
+            convertRateMap.put(targetPageSplit, converteRate);
+            lastPageSplitPv = targetPageSplitPv;
+        }
+
+        return convertRateMap;
     }
 
     /**
