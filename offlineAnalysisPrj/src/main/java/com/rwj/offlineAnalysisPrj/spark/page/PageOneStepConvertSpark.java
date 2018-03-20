@@ -37,7 +37,8 @@ public class PageOneStepConvertSpark {
         JavaSparkContext jsc = JavaSparkContext.fromSparkContext(ss.sparkContext());
 
         //2、生成模拟数据
-        MockData.mock(jsc, ss);
+        //MockData.mock(jsc, ss);
+        SparkUtils.mockData(jsc, ss);
 
         //3、查询任务，获取任务的参数
         long taskId = ParamUtils.getTaskIdFromArgs(args, Constants.SPARK_LOCAL_TASKID_PAGE);

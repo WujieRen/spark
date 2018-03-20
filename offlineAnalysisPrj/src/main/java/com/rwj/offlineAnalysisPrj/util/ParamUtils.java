@@ -18,7 +18,7 @@ public class ParamUtils {
         boolean local = ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL);
 
         if(local) {
-            ConfiguratoinManager.getLongValue(taskType);
+            return ConfiguratoinManager.getLongValue(taskType);
         } else {
             try {
                 if(args != null && args.length > 0){

@@ -70,7 +70,7 @@ public class ConfiguratoinManager {
     public static Long getLongValue(String key) {
         String value = getProperty(key);
         try {
-            Long.valueOf(value);
+            return Long.valueOf(value);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }

@@ -10,7 +10,7 @@ import com.rwj.offlineAnalysisPrj.jdbc.JdbcHelper;
 public class PageSplitConvertRateDAOImpl implements IPageSplitConvertRateDAO {
     @Override
     public void insert(PageSplitConvertRate pageSplitConvertRate) {
-        String sql = "";
+        String sql = "insert into page_split_convert_rate values(?,?)";
         Object[] param = new Object[]{pageSplitConvertRate.getTaskId(), pageSplitConvertRate.getConvertRate()};
 
         JdbcHelper jdbcHelper = JdbcHelper.getInstance();

@@ -213,8 +213,8 @@ public class DateUtils {
         }
     }*/
 
-    public static void main(String[] args) {
+   /* public static void main(String[] args) {
         Date d = new Date("2018-01-17 17:56:50");
 
-    }
+    }*/
 }

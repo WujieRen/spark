@@ -63,8 +63,8 @@ import java.util.*;
  * ② top10品类被各session点击次数
  * ③ 分组取topN算法获取top10session
  */
-public class UserVisitSessionAnalyzeSpark {
 
+/*public class UserVisitSessionAnalyzeSpark {
     public static void main(String[] args) {
 
         args = new String[]{"1"};
@@ -82,7 +82,7 @@ public class UserVisitSessionAnalyzeSpark {
 
         //查询指定任务并获取响应参数
         ITaskDAO taskDAO = DAOFactory.getTaskDAO();
-        long taskId = ParamUtils.getTaskIdFromArgs(args);
+        long taskId = ParamUtils.getTaskIdFromArgs(args, "1");
         Task task = taskDAO.findById(taskId);
         JSONObject taskParam = JSONObject.parseObject(task.getTaskParam());
 
@@ -118,11 +118,13 @@ public class UserVisitSessionAnalyzeSpark {
         ss.close();
     }
 
-    /**
+    *//**
      * 获取sessionid2到访问行为数据的映射的RDD
-     * @param actionRDD
+     * @param
+    actionRDD
      * @return
-     */
+     *//*
+
     public static JavaPairRDD<String, Row> getSessionid2ActionRDD(JavaRDD<Row> actionRDD) {
         return actionRDD.mapToPair(new PairFunction<Row, String, Row>() {
 
@@ -136,12 +138,13 @@ public class UserVisitSessionAnalyzeSpark {
         });
     }
 
-    /**
+    *//**
      * 随机抽取session
      *
      * @param taskId
      * @param sessionid2AggrInfoRDD
-     */
+     *//*
+
     private static void randomExtractSession(final long taskId, JavaPairRDD<String, String> sessionid2AggrInfoRDD) {
         //1.计算出每天每小时session数量，
         // 先获取JavaPairRDD<yyyy-MM-dd_HH,aggrInfo>格式的RDD
@@ -174,15 +177,16 @@ public class UserVisitSessionAnalyzeSpark {
             long count = Long.valueOf(entry.getValue());
 
             //这里当get 新date 时，值一定为null，这时要新建一个容器，来存放这个新date的Map。而如果这个 date 是已存在的，就不需要新建，直接添加在旧容器中即可。
-           /* Map<String, Long> hourCountMap = dateHourCountMap.get(date);
+ Map<String, Long> hourCountMap = dateHourCountMap.get(date);
             if (hourCountMap == null) {
                 hourCountMap = new HashMap<String, Long>();
                 hourCountMap.put(hour, count);
             } else {
                 hourCountMap.put(hour, count);
             }
-            dateHourCountMap.put(date, hourCountMap);*/
-            Map<String, Long> hourCountMap = dateHourCountMap.get(date);
+            dateHourCountMap.put(date, hourCountMap);
+
+            //Map<String, Long> hourCountMap = dateHourCountMap.get(date);
             if(hourCountMap == null) {
                 hourCountMap = new HashMap<String, Long>();
                 dateHourCountMap.put(date, hourCountMap);
@@ -194,9 +198,10 @@ public class UserVisitSessionAnalyzeSpark {
         //②算出每天要抽取的数量，假设总共抽取100个
         int extractNumberPerDay = 100 / dateHourCountMap.size();
 
-        /**
+        *//**
          * 按时间随机抽取算法实现
-         */
+         *//*
+
         // <date,<hour,(3,5,20,102)>>
         Map<String, Map<String, List<Integer>>> dateHourExtractMap =
                 new HashMap<String, Map<String, List<Integer>>>();
@@ -296,23 +301,25 @@ public class UserVisitSessionAnalyzeSpark {
                 }
         );
 
-        /**
+        *//**
          * 第四步：获取抽取出来的session的明细数据
-         */
+         *//*
+
         extractSessionidsRDD.count();
 
 
     }
 
-    /**
-     * 按给定参数过滤session数据
-     * 重构：
-     * 过滤的同时对各访问时长和步长进行统计
-     *
-     * @param sessionid2AggrInfoRDD
-     * @param taskParam
-     * @return
-     */
+*//**
+* 按给定参数过滤session数据
+* 重构：
+* 过滤的同时对各访问时长和步长进行统计
+*
+* @param sessionid2AggrInfoRDD
+* @param taskParam
+* @return
+*//*
+
     private static JavaPairRDD<String, String> filterSessionAndAggrStat(
             JavaPairRDD<String, String> sessionid2AggrInfoRDD,
             final JSONObject taskParam,
@@ -371,9 +378,10 @@ public class UserVisitSessionAnalyzeSpark {
                             return false;
                         }
 
-                        /**
+                        *//**
                          * 能走到这里的session都是过滤后剩下的，此时，要对通过滤的session个数、以及各个session的访问时长和步长，进行计数
-                         */
+                         *//*
+
 
                         //session个数
                         sessionAggrStatAccumulator.add(Constants.SESSION_COUNT);
@@ -388,10 +396,11 @@ public class UserVisitSessionAnalyzeSpark {
                         return true;
                     }
 
-                    /**
+                    *//**
                      * 访问时长计数
                      * @param visitLength
-                     */
+                     *//*
+
                     private void calculateVisitLength(long visitLength) {
                         if (visitLength >= 1 && visitLength <= 3) {
                             sessionAggrStatAccumulator.add(Constants.TIME_PERIOD_1s_3s);
@@ -414,10 +423,11 @@ public class UserVisitSessionAnalyzeSpark {
                         }
                     }
 
-                    /**
+                    *//**
                      * 访问步长计数
                      * @param stepLength
-                     */
+                     *//*
+
                     private void calculateStepLength(long stepLength) {
                         if (stepLength >= 1 && stepLength <= 3) {
                             sessionAggrStatAccumulator.add(Constants.STEP_PERIOD_1_3);
@@ -439,13 +449,14 @@ public class UserVisitSessionAnalyzeSpark {
         return filteredSessionid2AggrInfoRDD;
     }
 
-    /**
+*//**
      * 按session粒度聚合数据
      *
      * @param ss
      * @param sessionid2actionRDD
      * @return
-     */
+*//*
+
     private static JavaPairRDD<String, String> aggregateBySession(SparkSession ss, JavaPairRDD<String, Row> sessionid2actionRDD) {
         //对数据按session粒度进行聚合
         JavaPairRDD<String, Iterable<Row>> sessionIdGroupRDD = sessionid2actionRDD.groupByKey();
@@ -492,9 +503,9 @@ public class UserVisitSessionAnalyzeSpark {
                                 }
                             }
 
-                            /**
+                            *//**
                              * 重构之访问时长和步长统计
-                             */
+                              *//*
                             Date actionTime = DateUtils.parseTime(row.getString(4));
                             if (startTime == null) {
                                 startTime = actionTime;
@@ -575,13 +586,14 @@ public class UserVisitSessionAnalyzeSpark {
         return sessionId2FullInfoRDD;
     }
 
-    /**
-     * 获取指定日期内的数据
-     *
-     * @param ss
-     * @param taskParam
-     * @return
-     */
+*//**
+* 获取指定日期内的数据
+*
+* @param ss
+* @param taskParam
+* @return
+*//*
+
     private static JavaRDD<Row> getActionRDDByDateRange(SparkSession ss, JSONObject taskParam) {
         String startDate = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_START_DATE);
         String endDate = ParamUtils.getParamFromJsonObject(taskParam, Constants.PARAM_END_DATE);
@@ -595,12 +607,13 @@ public class UserVisitSessionAnalyzeSpark {
         return actionDF.javaRDD();
     }
 
-    /**
-     * 计算各session范围占比，并写入mysql
-     *
-     * @param value
-     * @param taskId
-     */
+*//**
+* 计算各session范围占比，并写入mysql
+*
+* @param value
+* @param taskId
+*//*
+
     private static void calculateAndPersistAggrStat(String value, long taskId) {
         //从Accumulator统计结果中获取响应字段的值
         long session_count = Long.valueOf(StringUtils.getFieldFromConcatString(value, "\\|", Constants.SESSION_COUNT));
@@ -701,4 +714,4 @@ public class UserVisitSessionAnalyzeSpark {
     }
 
 
-}
+}*/

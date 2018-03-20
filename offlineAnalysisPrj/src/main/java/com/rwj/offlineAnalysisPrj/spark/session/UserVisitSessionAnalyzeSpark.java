@@ -68,7 +68,8 @@ public class UserVisitSessionAnalyzeSpark {
         JavaSparkContext jsc = JavaSparkContext.fromSparkContext(sc);
 
         //生成模拟数据
-        MockData.mock(jsc, ss);
+        //MockData.mock(jsc, ss);
+        SparkUtils.mockData(jsc, ss);
 
         //查询指定任务并获取响应参数
         ITaskDAO taskDAO = DAOFactory.getTaskDAO();
@@ -865,7 +866,6 @@ public class UserVisitSessionAnalyzeSpark {
 
                         ISessionDetailDAO sessionDetailDAO = DAOFactory.getSessionDetailDAO();
                         sessionDetailDAO.insert(sessionDetail);
-                        //System.out.println("插入成功g---");
                     }
                 }
         );

@@ -3,6 +3,8 @@ package com.rwj.offlineAnalysisPrj.util;
 import com.alibaba.fastjson.JSONObject;
 import com.rwj.offlineAnalysisPrj.conf.ConfiguratoinManager;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
+import com.rwj.offlineAnalysisPrj.mockdata.MockData;
+import org.apache.log4j.lf5.viewer.configure.ConfigurationManager;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
@@ -25,8 +27,6 @@ public class SparkUtils {
      */
     public static SparkSession getSparkSesseion(String appName) {
         boolean local = ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL);
-
-        System.out.println(local);
 
         SparkSession ss = null;
         SparkSession.Builder builder = SparkSession.builder();
@@ -56,11 +56,13 @@ public class SparkUtils {
     /**
      * 生成模拟数据
      * 如果spark.local配置设置为true，则生成模拟数据；否则不生成
-     * @param sc
-     * @param sqlContext
+     * @param jsc
+     * @param ss
      */
-    public static void mockData(JavaSparkContext sc, SQLContext sqlContext) {
-
+    public static void mockData(JavaSparkContext jsc, SparkSession ss) {
+        if(ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL)) {
+            MockData.mock(jsc, ss);
+        }
     }
 
     /**
