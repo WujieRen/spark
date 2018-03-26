@@ -30,7 +30,7 @@ import java.util.*;
  * -》 生成模拟数据
  * -》 获取响应task参数并从表中取得参数范围内数据
  * -》 对行为数据按session粒度进行聚合
- * -》 首先可将行为数据按session_id进行grouoby，此时得到的数据粒度就是session粒度了。
+ * -》 首先可将行为数据按session_id进行groupby，此时得到的数据粒度就是session粒度了。
  * -》 将session粒度的数据和用户信息进行join，就可以获得包含用户信息的session粒度的数据了。
  * 2. 按筛选参数对session粒度聚合数据进行过滤
  * 3. session聚合统计
@@ -105,6 +105,7 @@ public class UserVisitSessionAnalyzeSpark {
         JavaPairRDD<String, String> sessionid2AggrInfoRDD = aggregateBySession(ss, sessionid2actionRDD);
         //sessionid2actionRDD.cache();
         //System.out.println(sessionid2AggrInfoRDD.cache().count() + "---" + sessionid2AggrInfoRDD.first().toString());
+        System.out.println(sessionid2AggrInfoRDD.take(5).toString());
 
         //重构，同时进行统计和过滤
         //注册自定义过滤器。reference:http://spark.apache.org/docs/latest/rdd-programming-guide.html#accumulators

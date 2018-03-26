@@ -14,11 +14,15 @@ public interface Constants {
     String JDBC_URL = "jdbc.url";
     String JDBC_USER = "jdbc.user";
     String JDBC_PASSWORD = "jdbc.password";
+    String JDBC_URL_PROD = "jdbc.url.prod";
+    String JDBC_USER_PROD = "jdbc.user.prod";
+    String JDBC_PASSWORD_PROD = "jdbc.password.prod";
     String JDBC_DATASOURCE_SIZE = "jdbc.datasource.size";
     //Spark入口更新为SparkSession后不再需要
     String SPARK_LOCAL = "spark.local";
     String SPARK_LOCAL_TASKID_SESSION = "spark.local.taskid.session";
     String SPARK_LOCAL_TASKID_PAGE = "spark.local.taskid.page";
+    String SPARK_LOCAL_TASKID_PRODUCT = "spark.local.taskid.product";
 
     /**
      * 任务相关的常量
@@ -39,6 +43,7 @@ public interface Constants {
      */
     String SPARK_APP_NAME_SESSION = "UserVisitSessionAnalyzeSpark";
     String SPARK_APP_NAME_PAGE = "PageOneStepConvertRateSpark";
+    String SPARK_APP_NAME_PRODUCT = "AreaTop3ProductSpark";
     String FIELD_SESSION_ID = "sessionid";
     String FIELD_SEARCH_KEYWORDS = "searchKeywords";
     String FIELD_CLICK_CATEGORY_IDS = "clickCategoryIds";

@@ -66,7 +66,7 @@ public class SparkUtils {
     }
 
     /**
-     * 获取指定日期内的数据
+     * 获取指定日期内的用户访问数据
      * @param ss
      * @param taskParam
      * @return
