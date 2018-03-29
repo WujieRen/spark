@@ -39,6 +39,8 @@ public class AreaTop3ProductSpark {
         ss.udf().register("concat_long_string", new ConcatLongStringUDF(), DataTypes.StringType);
         ss.udf().register("group_concat_distinct", new GroupConcatDistinctUDAF());
         ss.udf().register("get_json_object", new GetJsonObjectUDF(), DataTypes.StringType);
+        ss.udf().register("random_prefix", new RandomPrefixUDF(), DataTypes.StringType);
+        ss.udf().register("remove_random_prefix", new RemoveRandomPrefixUDF(), DataTypes.StringType);
 
         //2、生成模拟数据
         SparkUtils.mockData(jsc, ss);
