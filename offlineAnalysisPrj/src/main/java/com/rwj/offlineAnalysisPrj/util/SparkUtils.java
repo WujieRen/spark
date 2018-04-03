@@ -4,13 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import com.rwj.offlineAnalysisPrj.conf.ConfiguratoinManager;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
 import com.rwj.offlineAnalysisPrj.mockdata.MockData;
+import com.rwj.offlineAnalysisPrj.spark.session.CategorySortKey;
 import org.apache.log4j.lf5.viewer.configure.ConfigurationManager;
+import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.SparkSession;
+
+import java.lang.reflect.Array;
 
 /**
  * Created by renwujie on 2018/01/05 at 16:28
@@ -28,24 +32,40 @@ public class SparkUtils {
     public static SparkSession getSparkSesseion(String appName) {
         boolean local = ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL);
 
+        //TODO:这块儿在序列化优化时遇到问题，解决reference:https://stackoverflow.com/questions/47747545/why-kryo-register-not-work-in-sparksession
+        SparkConf conf = new SparkConf()
+                .set("spark.storage.memoryFraction", "0.5")//
+                .set("spark.shuffle.consolidateFiles", "true")
+                .set("spark.shuffle.file.buffer", "64")
+                .set("spark.shuffle.memoryFraction", "0.3")
+                .set("spark.reducer.maxSizeInFlight", "24")
+                .set("spark.shuffle.io.maxRetries", "60")
+                .set("spark.shuffle.io.retryWait", "60")
+                .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+                .registerKryoClasses(new Class[]{CategorySortKey.class});
+
         SparkSession ss = null;
         SparkSession.Builder builder = SparkSession.builder();
-        builder
-                //.config("spark.default.parallelism", "100")
-                .config("spark.storage.memoryFraction", "0.5")
+        /*builder
+                //.config("spark.default.parallelism", "100")//spark作业的并行度
+                .config("spark.storage.memoryFraction", "0.5")//
                 .config("spark.shuffle.consolidateFiles", "true")
                 .config("spark.shuffle.file.buffer", "64")
                 .config("spark.shuffle.memoryFraction", "0.3")
                 .config("spark.reducer.maxSizeInFlight", "24")
                 .config("spark.shuffle.io.maxRetries", "60")
-                .config("spark.shuffle.io.retryWait", "60");
+                .config("spark.shuffle.io.retryWait", "60");*/
 
         if(local) {
-            ss = builder.master("local")
+            ss = builder
+                    .master("local")
                     .appName(appName)
+                    .config(conf)
                     .getOrCreate();
         } else {
-            ss = builder.appName(appName)
+            ss = builder
+                    .appName(appName)
+                    .config(conf)
                     .enableHiveSupport()
                     .getOrCreate();
         }

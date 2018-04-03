@@ -1,11 +1,59 @@
 1. 分配更多资源
+    (性能调优的王道，就是增加和分配更多的资源。)
     ① 分配那些资源？
+        executor、cup per executor、memory per executor、driver memory
     ② 在哪里分配？
-    ③ 怎么分配？
+        再生产环境中，提交spark作业时，用的spark-submit shell脚本里调整对应的参数。
+            /usr/local/spark/bin/spark-submit \
+            --class cn.spark.sparktest.core.WordCountCluster \
+            --num-executors 3 \  配置executor的数量
+            --driver-memory 100m \  配置driver的内存（影响不大）
+            --executor-memory 100m \  配置每个executor的内存大小
+            --executor-cores 3 \  配置每个executor的cpu core数量
+            /usr/local/SparkTest-0.0.1-SNAPSHOT-jar-with-dependencies.jar \
+    ③ 怎么分配？(调节到多大算最大？)
+        第一种：standalone。根据公司集群能够使用的资源分配。
+        第二种：Yarn。根据资源队列的资源分配。
     ④ 为什么分配更多资源可以提升性能？
 2. 增加并行度
     ① 什么是并行度？
+        Spark作业中，各个stage的task数量。
     ② 并行度过低会怎样？
+        资源浪费。如：每个executor有3 个vpu core，但是task数量(并行度)没设置或设置为2。虽然资源分配够了，但并没有充分利用，导致集群资源浪费。效率没有最大化。
     ③ 如何设置并行度？
+        参数：spark.default.parallelism
 3. 重构RDD架构 & RDD 持久化
+    ①尽量复用RDD,差不多的RDD抽取为同一个RDD。
+    ②公共RDD一定要持久化——即将RDD的数据缓存到内存中/磁盘中(BlockManager)。
+        对RDD.persist(持久化级别)
+    ③持久化是可以进行序列化的。如果正常数据持久化到内存中，可能会导致内存占用过大，甚至导致OOM。将RDD的每个partition的数据序列化成一个大的字节数组(即一个对象)，可以大大减少内存的占用空间。唯一的缺点是在获取数据时需要进行反序列化。
+    ④为了数据的高可靠性，内存充足时，可以使用双副本机制。
+---------------------------------------------------
+4.广播大便量
+    原理：
+        不同task读取某个变量时造成网络传输消耗过大，也会占用很大内存，这样可能会导致两个结果，一是rdd持久化或者缓存时因空间不够导致rdd频繁地磁盘写入（IO损耗），二是task在创建对象时发现堆内存空间不够，于是频繁地GC(垃圾回收)，GC的时候一定会导致线程停止，即导致spark作业暂停。频繁GC会对spark作业性能造成很大影响。
+    解决方案：
+        广播大变量
+        原理：
+        好处：
+            每个节点的executor一份副本，而不是每个task一份副本。可以让副本量大大减少。
+        方式：
+5.使用kryo序列化
+    默认情况下，Spark内部使用Java的序列化机制，ObjectOutputStream/ObjectInputStream对象输出输入流机制来进行序列化。
+    这种序列化机制的好处在于方便，序列化的对象实现Serializable接口即可。
+    但缺点在于效率不高，序列化速度较慢，且占用内存空间相对较大。
+
+    可以手动进行序列化优化
+        spark支持kryo序列化机制。kryo序列化机制比默认的Java序列化机制速度快，序列化后的数据也更小，大概是Java序列化机制的1/10。
+
+    方式：
+        参数: "spark.serializer","org.apache.spark.serializer.KryoSerializer"
+    生效范围：
+        ①算子中使用到的外部变量
+        ②持久化RDD时序列化(StorageLevel.MEMORY_ONLY)
+        ③shuffle
+
+
+
+
 

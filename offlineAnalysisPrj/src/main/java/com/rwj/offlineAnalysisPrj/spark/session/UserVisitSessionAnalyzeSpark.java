@@ -8,12 +8,15 @@ import com.rwj.offlineAnalysisPrj.domain.*;
 import com.rwj.offlineAnalysisPrj.mockdata.MockData;
 import com.rwj.offlineAnalysisPrj.spark.session.accumulator.SessionAggrStatAccumulator;
 import com.rwj.offlineAnalysisPrj.util.*;
+import jodd.util.collection.IntArrayList;
+import org.apache.calcite.util.IntList;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.Optional;
 import org.apache.spark.api.java.function.*;
+import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.storage.StorageLevel;
@@ -105,7 +108,7 @@ public class UserVisitSessionAnalyzeSpark {
         JavaPairRDD<String, String> sessionid2AggrInfoRDD = aggregateBySession(ss, sessionid2actionRDD);
         //sessionid2actionRDD.cache();
         //System.out.println(sessionid2AggrInfoRDD.cache().count() + "---" + sessionid2AggrInfoRDD.first().toString());
-        System.out.println(sessionid2AggrInfoRDD.take(5).toString());
+        //System.out.println(sessionid2AggrInfoRDD.take(5).toString());
 
         //重构，同时进行统计和过滤
         //注册自定义过滤器。reference:http://spark.apache.org/docs/latest/rdd-programming-guide.html#accumulators
@@ -122,8 +125,9 @@ public class UserVisitSessionAnalyzeSpark {
 
         //生成公共的RDD：通过筛选条件的session的访问明细数据
         JavaPairRDD<String, Row> sessionid2detailRDD = getSessionid2detailRDD( sessionid2actionRDD, filteredSessionid2AggrInfoRDD);
+        sessionid2detailRDD = sessionid2detailRDD.persist(StorageLevel.MEMORY_ONLY());
 
-        randomExtractSession(task.getTaskid(), filteredSessionid2AggrInfoRDD, sessionid2detailRDD);//这里原来写错了，应该是用的sessionid2detailRDD，原来写成了sessionid2actionRDD
+        randomExtractSession(jsc, task.getTaskid(), filteredSessionid2AggrInfoRDD, sessionid2detailRDD);//这里原来写错了，应该是用的sessionid2detailRDD，原来写成了sessionid2actionRDD
 
         //计算出各个范围的session占比，并写入MySQL
         calculateAndPersistAggrStat(sessionAggrStatAccumulator.value(), task.getTaskid());
@@ -686,7 +690,11 @@ public class UserVisitSessionAnalyzeSpark {
      * @param taskId
      * @param sessionid2AggrInfoRDD
      */
-    private static void randomExtractSession(final long taskId, JavaPairRDD<String, String> sessionid2AggrInfoRDD, JavaPairRDD<String, Row> sessionid2actionRDD) {
+    private static void randomExtractSession(
+            JavaSparkContext jsc,
+            final long taskId,
+            JavaPairRDD<String, String> sessionid2AggrInfoRDD,
+            JavaPairRDD<String, Row> sessionid2actionRDD) {
         //1.计算出每天每小时session数量，
         // 先获取JavaPairRDD<yyyy-MM-dd_HH,aggrInfo>格式的RDD
         //然后countByKey()
@@ -742,8 +750,7 @@ public class UserVisitSessionAnalyzeSpark {
          * 按时间随机抽取算法实现
          */
         // <date,<hour,(3,5,20,102)>>
-        Map<String, Map<String, List<Integer>>> dateHourExtractMap =
-                new HashMap<String, Map<String, List<Integer>>>();
+        Map<String, Map<String, List<Integer>>> dateHourExtractMap = new HashMap<String, Map<String, List<Integer>>>();
         Random random = new Random();
 
         for (Map.Entry<String, Map<String, Long>> dateHourCountEntry : dateHourCountMap.entrySet()) {
@@ -792,6 +799,11 @@ public class UserVisitSessionAnalyzeSpark {
             }
         }
 
+        /**
+         * 广播大变量
+         */
+        Broadcast<Map<String, Map<String, List<Integer>>>> dateHourExtractMapBroadcast = jsc.broadcast(dateHourExtractMap);
+
         //③遍历每天每小时session，然后根据随机索引进行抽取
         JavaPairRDD<String, Iterable<String>> time2sessionsRDD = time2sessionidRDD.groupByKey();
 
@@ -804,6 +816,11 @@ public class UserVisitSessionAnalyzeSpark {
                         String date = dateHour[0];
                         String hour = dateHour[1];
                         Iterator<String> iterator = tuple._2.iterator();
+
+                        /**
+                         * 使用广播变量的时候，直接调用广播变量的value()/getValue()即可得到之前封装的广播变量。
+                         */
+                        Map<String, Map<String, List<Integer>>> dateHourExtractMap = dateHourExtractMapBroadcast.value();
                         List<Integer> extractIndexList = dateHourExtractMap.get(date).get(hour);
 
                         List<Tuple2<String, String>> extractSessionids = new ArrayList<Tuple2<String, String>>();
