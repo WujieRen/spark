@@ -51,9 +51,9 @@ public class DateUtils {
             synchronized (str) {
                 Date dateTime1 = TIME_FORMAT.parse(time1);
                 Date dateTime2 = TIME_FORMAT.parse(time2);
-            if (dateTime1.after(dateTime2)) {
-                return true;
-            }
+                if (dateTime1.after(dateTime2)) {
+                    return true;
+                }
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -167,17 +167,25 @@ public class DateUtils {
 
     /**
      * 格式化日期key
-     *
+     *  yyMMdd
+     * @param date
+     * @return
+     */
+    public static String formatDateKey(Date date) {
+        return DATEKEY_FORMAT.format(date);
+    }
+
+    /**
+     * 格式化日期key
      * @param dateKey
      * @return
      */
-    public static Date formatDateKey(String dateKey) {
+    public static Date parseDateKey(String dateKey) {
         try {
             return DATEKEY_FORMAT.parse(dateKey);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 

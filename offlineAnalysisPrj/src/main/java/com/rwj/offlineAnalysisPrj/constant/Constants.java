@@ -44,6 +44,7 @@ public interface Constants {
     String SPARK_APP_NAME_SESSION = "UserVisitSessionAnalyzeSpark";
     String SPARK_APP_NAME_PAGE = "PageOneStepConvertRateSpark";
     String SPARK_APP_NAME_PRODUCT = "AreaTop3ProductSpark";
+    String SPARK_APP_NAME_ADVERTISEMENT = "AdClickRealTimeStatSpark";
     String FIELD_SESSION_ID = "sessionid";
     String FIELD_SEARCH_KEYWORDS = "searchKeywords";
     String FIELD_CLICK_CATEGORY_IDS = "clickCategoryIds";

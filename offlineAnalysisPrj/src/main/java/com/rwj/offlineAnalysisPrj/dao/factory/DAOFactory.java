@@ -39,4 +39,20 @@ public class DAOFactory {
     public static IAreaTop3ProductDAO getAreaTop3ProductDAO() {
         return new AreaTop3ProductDAO();
     }
+
+    public static IAdUserClickCountDAO getAdUserClickCountDAO() {
+        return new AdUserClickCountDAOImpl();
+    }
+
+    public static IAdBlackListDAO getAdBlackListDAO() {
+        return new AdBlackListDAOImpl();
+    }
+
+    public static IAdStatDAO getAdStatDAO() {
+        return new AdStatDAOImpl();
+    }
+
+    public static IAdProvinceTop3DAO getAdProvinceTop3DAO() {
+        return new AdProvinceTop3DAO();
+    }
 }

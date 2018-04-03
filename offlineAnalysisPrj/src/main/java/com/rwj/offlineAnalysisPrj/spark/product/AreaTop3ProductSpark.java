@@ -244,7 +244,7 @@ public class AreaTop3ProductSpark {
             password = ConfiguratoinManager.getProperty(Constants.JDBC_PASSWORD);
         } else {
             url = ConfiguratoinManager.getProperty(Constants.JDBC_URL_PROD);
-            userName = ConfiguratoinManager.getProperty(Constants.JDBC_URL_PROD);
+            userName = ConfiguratoinManager.getProperty(Constants.JDBC_USER_PROD);
             password = ConfiguratoinManager.getProperty(Constants.JDBC_PASSWORD_PROD);
         }
 
