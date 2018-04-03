@@ -5,11 +5,10 @@ import com.rwj.offlineAnalysisPrj.constant.Constants;
 import com.rwj.offlineAnalysisPrj.dao.*;
 import com.rwj.offlineAnalysisPrj.dao.factory.DAOFactory;
 import com.rwj.offlineAnalysisPrj.domain.*;
-import com.rwj.offlineAnalysisPrj.mockdata.MockData;
 import com.rwj.offlineAnalysisPrj.spark.session.accumulator.SessionAggrStatAccumulator;
 import com.rwj.offlineAnalysisPrj.util.*;
-import jodd.util.collection.IntArrayList;
-import org.apache.calcite.util.IntList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -800,9 +799,37 @@ public class UserVisitSessionAnalyzeSpark {
         }
 
         /**
-         * 广播大变量
+         * fastutil优化
          */
-        Broadcast<Map<String, Map<String, List<Integer>>>> dateHourExtractMapBroadcast = jsc.broadcast(dateHourExtractMap);
+        Map<String, Map<String, IntList>> fastutilDateHourExtractMap = new HashMap<String, Map<String, IntList>>();
+
+        for(Map.Entry<String, Map<String, List<Integer>>> dateHourExtractEntry : dateHourExtractMap.entrySet()) {
+            String date = dateHourExtractEntry.getKey();
+            Map<String, List<Integer>> hourExtractMap = dateHourExtractEntry.getValue();
+
+            Map<String, IntList> fastutilHourExtractMap = new HashMap<String, IntList>();
+
+            for(Map.Entry<String, List<Integer>> hourExtractEntry : hourExtractMap.entrySet() ) {
+                String hour = hourExtractEntry.getKey();
+                List<Integer> extractList = hourExtractEntry.getValue();
+
+                IntList fastutilExtractList = new IntArrayList();
+
+                for(int i = 0; i < extractList.size(); i++) {
+                    fastutilExtractList.add(extractList.get(i));
+                }
+
+                fastutilHourExtractMap.put(hour, fastutilExtractList);
+            }
+
+            fastutilDateHourExtractMap.put(date, fastutilHourExtractMap);
+        }
+
+        /**
+         * 广播大变量优化
+         */
+        //Broadcast<Map<String, Map<String, List<Integer>>>> dateHourExtractMapBroadcast = jsc.broadcast(dateHourExtractMap);
+        Broadcast<Map<String, Map<String, IntList>>> fastutilDateHourExtractMapBroadcast = jsc.broadcast(fastutilDateHourExtractMap);
 
         //③遍历每天每小时session，然后根据随机索引进行抽取
         JavaPairRDD<String, Iterable<String>> time2sessionsRDD = time2sessionidRDD.groupByKey();
@@ -820,7 +847,7 @@ public class UserVisitSessionAnalyzeSpark {
                         /**
                          * 使用广播变量的时候，直接调用广播变量的value()/getValue()即可得到之前封装的广播变量。
                          */
-                        Map<String, Map<String, List<Integer>>> dateHourExtractMap = dateHourExtractMapBroadcast.value();
+                        Map<String, Map<String, IntList>> dateHourExtractMap = fastutilDateHourExtractMapBroadcast.value();
                         List<Integer> extractIndexList = dateHourExtractMap.get(date).get(hour);
 
                         List<Tuple2<String, String>> extractSessionids = new ArrayList<Tuple2<String, String>>();

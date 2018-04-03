@@ -53,7 +53,10 @@
         ②持久化RDD时序列化(StorageLevel.MEMORY_ONLY)
         ③shuffle
 
+6.fastutil
+    把对应的集合类转为fastutil中对应的扩展集合类即可。
 
+7.
 
 
 
