@@ -1,7 +1,7 @@
 package com.rwj.offlineAnalysisPrj.spark.product;
 
 import com.alibaba.fastjson.JSONObject;
-import com.rwj.offlineAnalysisPrj.conf.ConfiguratoinManager;
+import com.rwj.offlineAnalysisPrj.conf.ConfigurationManager;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
 import com.rwj.offlineAnalysisPrj.dao.IAreaTop3ProductDAO;
 import com.rwj.offlineAnalysisPrj.dao.ITaskDAO;
@@ -236,16 +236,16 @@ public class AreaTop3ProductSpark {
         String url = null;
         String userName = null;
         String password = null;
-        boolean local = ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL);
+        boolean local = ConfigurationManager.getBooleanValue(Constants.SPARK_LOCAL);
 
         if(local) {
-            url = ConfiguratoinManager.getProperty(Constants.JDBC_URL);
-            userName = ConfiguratoinManager.getProperty(Constants.JDBC_USER);
-            password = ConfiguratoinManager.getProperty(Constants.JDBC_PASSWORD);
+            url = ConfigurationManager.getProperty(Constants.JDBC_URL);
+            userName = ConfigurationManager.getProperty(Constants.JDBC_USER);
+            password = ConfigurationManager.getProperty(Constants.JDBC_PASSWORD);
         } else {
-            url = ConfiguratoinManager.getProperty(Constants.JDBC_URL_PROD);
-            userName = ConfiguratoinManager.getProperty(Constants.JDBC_USER_PROD);
-            password = ConfiguratoinManager.getProperty(Constants.JDBC_PASSWORD_PROD);
+            url = ConfigurationManager.getProperty(Constants.JDBC_URL_PROD);
+            userName = ConfigurationManager.getProperty(Constants.JDBC_USER_PROD);
+            password = ConfigurationManager.getProperty(Constants.JDBC_PASSWORD_PROD);
         }
 
         Map<String, String> options = new HashMap<String, String>();

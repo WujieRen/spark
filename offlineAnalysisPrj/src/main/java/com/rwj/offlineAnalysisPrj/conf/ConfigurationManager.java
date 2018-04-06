@@ -6,13 +6,13 @@ import java.util.Properties;
 /**
  * Created by renwujie on 2018/01/09 at 19:27
  */
-public class ConfiguratoinManager {
+public class ConfigurationManager {
 
     private static Properties prop = new Properties();
 
     static {
         try {
-            InputStream in = ConfiguratoinManager.class.getClassLoader().getResourceAsStream("my.properties");
+            InputStream in = ConfigurationManager.class.getClassLoader().getResourceAsStream("my.properties");
 
             prop.load(in);
         } catch (Exception e) {

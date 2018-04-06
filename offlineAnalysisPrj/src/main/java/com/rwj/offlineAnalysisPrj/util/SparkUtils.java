@@ -1,20 +1,16 @@
 package com.rwj.offlineAnalysisPrj.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.rwj.offlineAnalysisPrj.conf.ConfiguratoinManager;
+import com.rwj.offlineAnalysisPrj.conf.ConfigurationManager;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
 import com.rwj.offlineAnalysisPrj.mockdata.MockData;
 import com.rwj.offlineAnalysisPrj.spark.session.CategorySortKey;
-import org.apache.log4j.lf5.viewer.configure.ConfigurationManager;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.SparkSession;
-
-import java.lang.reflect.Array;
 
 /**
  * Created by renwujie on 2018/01/05 at 16:28
@@ -30,7 +26,7 @@ public class SparkUtils {
      *  决定是否支持HiveContext
      */
     public static SparkSession getSparkSesseion(String appName) {
-        boolean local = ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL);
+        boolean local = ConfigurationManager.getBooleanValue(Constants.SPARK_LOCAL);
 
         //TODO:这块儿在序列化优化时遇到问题，解决reference:https://stackoverflow.com/questions/47747545/why-kryo-register-not-work-in-sparksession
         SparkConf conf = new SparkConf()
@@ -80,7 +76,7 @@ public class SparkUtils {
      * @param ss
      */
     public static void mockData(JavaSparkContext jsc, SparkSession ss) {
-        if(ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL)) {
+        if(ConfigurationManager.getBooleanValue(Constants.SPARK_LOCAL)) {
             MockData.mock(jsc, ss);
         }
     }

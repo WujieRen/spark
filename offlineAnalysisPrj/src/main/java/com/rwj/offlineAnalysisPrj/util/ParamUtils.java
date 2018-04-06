@@ -2,7 +2,7 @@ package com.rwj.offlineAnalysisPrj.util;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.rwj.offlineAnalysisPrj.conf.ConfiguratoinManager;
+import com.rwj.offlineAnalysisPrj.conf.ConfigurationManager;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
 
 /**
@@ -15,10 +15,10 @@ public class ParamUtils {
      * @return 任务id
      */
     public static Long getTaskIdFromArgs(String[] args, String taskType){
-        boolean local = ConfiguratoinManager.getBooleanValue(Constants.SPARK_LOCAL);
+        boolean local = ConfigurationManager.getBooleanValue(Constants.SPARK_LOCAL);
 
         if(local) {
-            return ConfiguratoinManager.getLongValue(taskType);
+            return ConfigurationManager.getLongValue(taskType);
         } else {
             try {
                 if(args != null && args.length > 0){

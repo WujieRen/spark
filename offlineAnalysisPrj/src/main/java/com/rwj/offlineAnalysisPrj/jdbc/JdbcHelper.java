@@ -1,6 +1,6 @@
 package com.rwj.offlineAnalysisPrj.jdbc;
 
-import com.rwj.offlineAnalysisPrj.conf.ConfiguratoinManager;
+import com.rwj.offlineAnalysisPrj.conf.ConfigurationManager;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
 
 import java.sql.*;
@@ -16,7 +16,7 @@ public class JdbcHelper {
     static {
 
         try {
-            String driver = ConfiguratoinManager.getProperty(Constants.JDBC_DRIVER);
+            String driver = ConfigurationManager.getProperty(Constants.JDBC_DRIVER);
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
             System.out.println("加载驱动出错");
@@ -43,12 +43,12 @@ public class JdbcHelper {
 
     //private Constructor && 将创建的 Connectin 放在唯一的数据库连接池中
     private JdbcHelper() {
-        int dataSourceSize = ConfiguratoinManager.getIntValue(Constants.JDBC_DATASOURCE_SIZE);
+        int dataSourceSize = ConfigurationManager.getIntValue(Constants.JDBC_DATASOURCE_SIZE);
 
         for (int i = 0; i < dataSourceSize; i++) {
-            String url = ConfiguratoinManager.getProperty(Constants.JDBC_URL);
-            String user = ConfiguratoinManager.getProperty(Constants.JDBC_USER);
-            String password = ConfiguratoinManager.getProperty(Constants.JDBC_PASSWORD);
+            String url = ConfigurationManager.getProperty(Constants.JDBC_URL);
+            String user = ConfigurationManager.getProperty(Constants.JDBC_USER);
+            String password = ConfigurationManager.getProperty(Constants.JDBC_PASSWORD);
             try {
                 Connection conn = DriverManager.getConnection(url, user, password);
                 dataSource.push(conn);

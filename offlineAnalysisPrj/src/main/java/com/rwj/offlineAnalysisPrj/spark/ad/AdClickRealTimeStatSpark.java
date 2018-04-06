@@ -1,6 +1,6 @@
 package com.rwj.offlineAnalysisPrj.spark.ad;
 
-import com.rwj.offlineAnalysisPrj.conf.ConfiguratoinManager;
+import com.rwj.offlineAnalysisPrj.conf.ConfigurationManager;
 import com.rwj.offlineAnalysisPrj.constant.Constants;
 import com.rwj.offlineAnalysisPrj.dao.IAdBlackListDAO;
 import com.rwj.offlineAnalysisPrj.dao.IAdProvinceTop3DAO;
@@ -34,7 +34,6 @@ import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaPairInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka.KafkaUtils;
-import org.codehaus.janino.Java;
 import scala.Tuple2;
 
 import java.util.*;
@@ -56,10 +55,10 @@ public class AdClickRealTimeStatSpark {
 
         // 构建kafka参数map,主要要放置的就是，要连接的kafka集群的地址（broker集群的地址列表）
         Map<String, String> kafkaParams = new HashMap<String, String>();
-        kafkaParams.put("metadata.broker.list", ConfiguratoinManager.getProperty("kafka.metadata.broker.list"));
+        kafkaParams.put("metadata.broker.list", ConfigurationManager.getProperty("kafka.metadata.broker.list"));
 
         //构建kafka Topic
-        String kafkaTopics = ConfiguratoinManager.getProperty("kafka.topic");
+        String kafkaTopics = ConfigurationManager.getProperty("kafka.topic");
         String[] kafkaTopicsSplited = kafkaTopics.split(",");
 
         Set<String> topics = new HashSet<>();
@@ -81,6 +80,7 @@ public class AdClickRealTimeStatSpark {
         // 最粗
         JavaPairDStream<String, Long> adRealTimeStatDStream = calculateRealTimeStat(
                 filteredAdRealTimeLogDStream);
+        //
 
 
         // 构建完spark streaming上下文之后，记得要进行上下文的启动、等待执行结束、关闭
