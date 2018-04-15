@@ -53,12 +53,12 @@ public class PageOneStepConvertSpark {
         //4、查询制定日期范围内的用户访问行为数据
         JavaRDD<Row> actionRDD = SparkUtils.getActionRDDByDateRange(ss, taskParam);
 
-        //页面切片的生成，要基于session粒度
         JavaPairRDD<String, Row> sessionid2actionRDD = getSessionid2actionRDD(actionRDD);
 
         JavaPairRDD<String, Iterable<Row>> sessionid2actionsRDD = sessionid2actionRDD.groupByKey();
         sessionid2actionsRDD = sessionid2actionsRDD.cache();
 
+        //页面切片的生成，要基于session粒度
         // 最核心的一步，每个session的单跳页面切片的生成，以及页面流的匹配，算法
         JavaPairRDD<String, Integer> pageSplitRDD = generateAndMatchPageSplit(jsc, sessionid2actionsRDD, taskParam);
         Map<String, Long> pageSplitPvMap = pageSplitRDD.countByKey();

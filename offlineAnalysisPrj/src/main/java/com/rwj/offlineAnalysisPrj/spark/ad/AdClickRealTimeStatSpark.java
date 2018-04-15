@@ -49,16 +49,19 @@ public class AdClickRealTimeStatSpark {
         SparkSession ss = SparkUtils.getSparkSesseion(Constants.SPARK_APP_NAME_ADVERTISEMENT);
         JavaSparkContext jsc = JavaSparkContext.fromSparkContext(ss.sparkContext());
         JavaStreamingContext jssc = new JavaStreamingContext(jsc, Durations.seconds(5));
+        //final String checkpointDir = "hdfs://192.168.92.66:9090/streaming_checkpoint";
+        final String checkpointDir = "T:/streaming_checkpoint";
+        jssc.checkpoint(checkpointDir);
 
         //创建针对Kafka数据来源的输入DStream(离线流，代表了一个源源不断的数据来源)
         // 选用kafka direct api（很多好处，包括自己内部自适应调整每次接收数据量的特性，等等）
 
         // 构建kafka参数map,主要要放置的就是，要连接的kafka集群的地址（broker集群的地址列表）
         Map<String, String> kafkaParams = new HashMap<String, String>();
-        kafkaParams.put("metadata.broker.list", ConfigurationManager.getProperty("kafka.metadata.broker.list"));
+        kafkaParams.put("metadata.broker.list", ConfigurationManager.getProperty(Constants.KAFKA_METADATA_BROKER_LIST));
 
         //构建kafka Topic
-        String kafkaTopics = ConfigurationManager.getProperty("kafka.topic");
+        String kafkaTopics = ConfigurationManager.getProperty(Constants.KAFKA_TOPICS);
         String[] kafkaTopicsSplited = kafkaTopics.split(",");
 
         Set<String> topics = new HashSet<>();
@@ -68,7 +71,14 @@ public class AdClickRealTimeStatSpark {
 
         //基于kafka direct api模式，构建出针对kafka集群中指定topic的输入DStream
         //TODO:这个返回值为K,V。V是日志，K是什么?(没有实际意义)
-        JavaPairInputDStream<String, String> adRealTimeLogDStream = KafkaUtils.createDirectStream(jssc, String.class, String.class, StringDecoder.class, StringDecoder.class, kafkaParams, topics);
+        JavaPairInputDStream<String, String> adRealTimeLogDStream = KafkaUtils.createDirectStream(
+                jssc,
+                String.class,
+                String.class,
+                StringDecoder.class,
+                StringDecoder.class,
+                kafkaParams,
+                topics);
 
         //先过滤一遍，命中黑名单的去除
         JavaPairDStream<String, String> filteredAdRealTimeLogDStream = filterByBlackList(adRealTimeLogDStream);
@@ -80,8 +90,12 @@ public class AdClickRealTimeStatSpark {
         // 最粗
         JavaPairDStream<String, Long> adRealTimeStatDStream = calculateRealTimeStat(
                 filteredAdRealTimeLogDStream);
-        //
 
+        //业务功能二：实时统计每天每个省份的Top3热门广告
+        calculateProvinceTop3Ad(ss, adRealTimeStatDStream);
+
+        //业务功能三：实时统计每天每个广告在最近1小时的滑动窗口内的点击趋势（每分钟的点击量）
+        calculateAdClickCountByWindow(adRealTimeLogDStream);
 
         // 构建完spark streaming上下文之后，记得要进行上下文的启动、等待执行结束、关闭
         try {
@@ -243,8 +257,8 @@ public class AdClickRealTimeStatSpark {
                                                 "click_count," +
                                                 "row_number() OVER(PARTITION BY province ORDER BY click_count DESC) rank " +
                                             "FROM tmp_daily_ad_click_count_by_prov" +
-                                        ") t" +
-                                        "WHERE rank<=3"
+                                        ") t " +
+                                        "WHERE rank <= 3"
                         );
 
 
