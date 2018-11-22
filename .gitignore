@@ -1,13 +1,13 @@
 #idea
-offlineAnalysisPrj/.idea
-offlineAnalysisPrj/.iml
-offlineAnalysisPrj/target
-offlineAnalysisPrj/.log
+offlineAnalysisPrj/.idea/
+offlineAnalysisPrj/*.iml
+offlineAnalysisPrj/target/
+offlineAnalysisPrj/*.log
 
-sparkBook/.idea
-sparkBook/.iml
-sparkBook/target
+sparkBook/.idea/
+sparkBook/*.iml
+sparkBook/target/
 
-SparkBrowser/.idea
-SparkBrowser/.iml
-SparkBrowser/target
+SparkBrowser/.idea/
+SparkBrowser/*.iml
+SparkBrowser/target/

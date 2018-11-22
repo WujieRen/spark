@@ -57,8 +57,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/ad/AdClickRealTimeStatSpark.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="319">
-              <caret line="95" lean-forward="true" selection-start-line="95" selection-end-line="95" />
+            <state relative-caret-position="693">
+              <caret line="109" lean-forward="true" selection-start-line="109" selection-end-line="109" />
               <folding>
                 <element signature="e#29100#29123#0" expanded="true" />
               </folding>
@@ -681,7 +681,7 @@
       <workItem from="1522985319861" duration="12639000" />
       <workItem from="1523781926865" duration="11423000" />
       <workItem from="1523801926237" duration="4969000" />
-      <workItem from="1542854365324" duration="1174000" />
+      <workItem from="1542854365324" duration="1665000" />
     </task>
     <task id="LOCAL-00001" summary="spark offlineAnalysisProject Utils">
       <created>1515141363737</created>
@@ -1023,7 +1023,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="430172000" />
+    <option name="totallyTimeSpent" value="430663000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1359,8 +1359,8 @@
     <entry file="jar://D:/java/jdk1.8.0_112/src.zip!/java/lang/Thread.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/com/rwj/offlineAnalysisPrj/spark/ad/AdClickRealTimeStatSpark.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="319">
-          <caret line="95" lean-forward="true" selection-start-line="95" selection-end-line="95" />
+        <state relative-caret-position="693">
+          <caret line="109" lean-forward="true" selection-start-line="109" selection-end-line="109" />
           <folding>
             <element signature="e#29100#29123#0" expanded="true" />
           </folding>
